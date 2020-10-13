@@ -5,6 +5,7 @@ module.exports = {
   // entry: ["@babel/polyfill", "./src/js/write.js"],
   entry: {
     main: ["@babel/polyfill", "./src/js/main.js"],
+    // board: ["@babel/polyfill", "./src/js/board.js"],
   },
   // 컴파일 + 번들링된 js 파일이 저장될 경로와 이름 지정
   output: {
