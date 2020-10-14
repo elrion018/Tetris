@@ -127,6 +127,7 @@ var Board = /*#__PURE__*/function () {
 /*! namespace exports */
 /*! export BLOCK_SIZE [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export COLS [provided] [no usage info] [missing usage info prevents renaming] */
+/*! export KEY [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export ROWS [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
 /*! runtime requirements: __webpack_require__.r, __webpack_exports__, __webpack_require__.d, __webpack_require__.* */
@@ -137,11 +138,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "COLS": () => /* binding */ COLS,
 /* harmony export */   "ROWS": () => /* binding */ ROWS,
-/* harmony export */   "BLOCK_SIZE": () => /* binding */ BLOCK_SIZE
+/* harmony export */   "BLOCK_SIZE": () => /* binding */ BLOCK_SIZE,
+/* harmony export */   "KEY": () => /* binding */ KEY
 /* harmony export */ });
 var COLS = 10;
 var ROWS = 20;
-var BLOCK_SIZE = 30;
+var BLOCK_SIZE = 30; // enum
+
+var KEY = {
+  LEFT: 37,
+  RIGHT: 39,
+  DOWN: 40
+};
+Object.freeze(KEY);
 
 /***/ }),
 
@@ -156,26 +165,58 @@ var BLOCK_SIZE = 30;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
-/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./board */ "./src/js/board.js");
-/* harmony import */ var _piece__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./piece */ "./src/js/piece.js");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
+/* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./board */ "./src/js/board.js");
+/* harmony import */ var _piece__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./piece */ "./src/js/piece.js");
+var _moves;
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
 var canvas = document.getElementById("board");
 var ctx = canvas.getContext("2d");
-var board = new _board__WEBPACK_IMPORTED_MODULE_0__.Board();
+var board = new _board__WEBPACK_IMPORTED_MODULE_1__.Board();
 
 function play() {
   board.reset();
   console.table(board.grid);
-  var piece = new _piece__WEBPACK_IMPORTED_MODULE_1__.Piece(ctx);
+  var piece = new _piece__WEBPACK_IMPORTED_MODULE_2__.Piece(ctx);
   piece.draw();
-}
+  board.piece = piece; // console.log(board.piece);
+} // keys
 
-ctx.canvas.width = _constants__WEBPACK_IMPORTED_MODULE_2__.COLS * _constants__WEBPACK_IMPORTED_MODULE_2__.BLOCK_SIZE;
-ctx.canvas.height = _constants__WEBPACK_IMPORTED_MODULE_2__.ROWS * _constants__WEBPACK_IMPORTED_MODULE_2__.BLOCK_SIZE;
-ctx.scale(_constants__WEBPACK_IMPORTED_MODULE_2__.BLOCK_SIZE, _constants__WEBPACK_IMPORTED_MODULE_2__.BLOCK_SIZE);
+
+var moves = (_moves = {}, _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.LEFT, function (p) {
+  return _objectSpread(_objectSpread({}, p), {}, {
+    x: p.x - 1
+  });
+}), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.RIGHT, function (p) {
+  return _objectSpread(_objectSpread({}, p), {}, {
+    x: p.x + 1
+  });
+}), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN, function (p) {
+  return _objectSpread(_objectSpread({}, p), {}, {
+    y: p.y + 1
+  });
+}), _moves);
+document.addEventListener("keydown", function (event) {
+  if (moves[event.keyCode]) {
+    event.preventDefault();
+    var p = moves[event.keyCode](board.piece);
+    board.piece.move(p);
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    board.piece.draw();
+  }
+});
+ctx.canvas.width = _constants__WEBPACK_IMPORTED_MODULE_0__.COLS * _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE;
+ctx.canvas.height = _constants__WEBPACK_IMPORTED_MODULE_0__.ROWS * _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE;
+ctx.scale(_constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE, _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE);
 window.play = play;
 
 /***/ }),
@@ -242,6 +283,12 @@ var Piece = /*#__PURE__*/function () {
           }
         });
       });
+    }
+  }, {
+    key: "move",
+    value: function move(p) {
+      this.x = p.x;
+      this.y = p.y;
     }
   }]);
 
