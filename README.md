@@ -1,3 +1,3 @@
-This is Vanilla JavaScript Tetris
+# This is Vanilla JavaScript Tetris
 
 http://regular-toy.surge.sh/
