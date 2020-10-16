@@ -6,6 +6,7 @@ const ctx = canvas.getContext("2d");
 let board = new Board();
 function play() {
   board.reset();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   console.table(board.grid);
   let piece = new Piece(ctx);
   piece.draw();

@@ -1,3 +1,5 @@
+import { COLORS, SHAPES } from "./constants";
+
 export class Piece {
   x;
   y;
@@ -11,14 +13,16 @@ export class Piece {
   }
 
   spawn() {
-    this.color = "blue";
-    this.shape = [
-      [2, 0, 0],
-      [2, 2, 2],
-      [0, 0, 0],
-    ];
+    const typeId = this.randomizePieceType(SHAPES.length);
+    this.shape = SHAPES[typeId];
+    this.color = COLORS[typeId];
+
     this.x = 3;
     this.y = 0;
+  }
+
+  randomizePieceType(types) {
+    return Math.floor(Math.random() * types);
   }
 
   draw() {

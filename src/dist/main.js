@@ -189,7 +189,7 @@ var COLS = 10;
 var ROWS = 20;
 var BLOCK_SIZE = 30;
 var COLORS = ["cyan", "blue", "orange", "yellow", "green", "purple", "red"];
-var SHAPES = [[[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 2, 2, 0], [0, 2, 2, 0], [0, 0, 0, 0]], [[3, 0, 0], [3, 3, 3], [0, 0, 0]], [[4, 4, 0], [0, 4, 4], [0, 0, 0]], [[0, 5, 0], [5, 5, 5], [0, 0, 0]]]; // enum
+var SHAPES = [[[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 2, 2, 0], [0, 2, 2, 0], [0, 0, 0, 0]], [[3, 0, 0], [3, 3, 3], [0, 0, 0]], [[4, 4, 0], [0, 4, 4], [0, 0, 0]], [[0, 5, 0], [5, 5, 5], [0, 0, 0]], [[0, 6, 6], [6, 6, 0], [0, 0, 0]], [[0, 0, 7], [7, 7, 7], [0, 0, 0]]]; // enum
 
 var KEY = {
   LEFT: 37,
@@ -233,6 +233,7 @@ var board = new _board__WEBPACK_IMPORTED_MODULE_1__.Board();
 
 function play() {
   board.reset();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   console.table(board.grid);
   var piece = new _piece__WEBPACK_IMPORTED_MODULE_2__.Piece(ctx);
   piece.draw();
@@ -302,7 +303,7 @@ window.play = play;
 /*! namespace exports */
 /*! export Piece [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
-/*! runtime requirements: __webpack_require__.r, __webpack_exports__, __webpack_require__.d, __webpack_require__.* */
+/*! runtime requirements: __webpack_require__, __webpack_require__.r, __webpack_exports__, __webpack_require__.d, __webpack_require__.* */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -310,6 +311,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Piece": () => /* binding */ Piece
 /* harmony export */ });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -317,6 +319,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 var Piece = /*#__PURE__*/function () {
   function Piece(ctx) {
@@ -339,10 +342,16 @@ var Piece = /*#__PURE__*/function () {
   _createClass(Piece, [{
     key: "spawn",
     value: function spawn() {
-      this.color = "blue";
-      this.shape = [[2, 0, 0], [2, 2, 2], [0, 0, 0]];
+      var typeId = this.randomizePieceType(_constants__WEBPACK_IMPORTED_MODULE_0__.SHAPES.length);
+      this.shape = _constants__WEBPACK_IMPORTED_MODULE_0__.SHAPES[typeId];
+      this.color = _constants__WEBPACK_IMPORTED_MODULE_0__.COLORS[typeId];
       this.x = 3;
       this.y = 0;
+    }
+  }, {
+    key: "randomizePieceType",
+    value: function randomizePieceType(types) {
+      return Math.floor(Math.random() * types);
     }
   }, {
     key: "draw",
