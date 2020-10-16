@@ -2,6 +2,12 @@
   font-family: "Press start 2P", cursive;
 }
 
+.container {
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 320px 200px;
