@@ -1,4 +1,4 @@
-import { ROWS, COLS, COLORS } from "./constants";
+import { ROWS, COLS, COLORS, POINTS } from "./constants";
 import { Piece } from "./piece";
 export class Board {
   grid;
@@ -89,13 +89,32 @@ export class Board {
     this.drawBoard();
   }
 
-  clearLine() {
+  getClearLinePoints(lines) {
+    switch (lines) {
+      case 1:
+        return POINTS.SINGLE;
+      case 2:
+        return POINTS.DOUBLE;
+      case 3:
+        return POINTS.TRIPLE;
+      case 4:
+        return POINTS.TETRIS;
+      default:
+        return 1600;
+    }
+  }
+
+  clearLine(account) {
+    let lines = 0;
     this.grid.forEach((row, y) => {
       if (row.every((value) => value > 0)) {
+        lines++;
         this.grid.splice(y, 1);
-
         this.grid.unshift(Array(COLS).fill(0));
       }
     });
+    if (lines > 0) {
+      account.score += this.getClearLinePoints(lines);
+    }
   }
 }

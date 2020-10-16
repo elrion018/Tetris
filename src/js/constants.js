@@ -60,4 +60,15 @@ export const KEY = {
   DOWN: 40,
   SPACE: 32,
 };
+
+export const POINTS = {
+  SINGLE: 100,
+  DOUBLE: 300,
+  TRIPLE: 500,
+  TETRIS: 800,
+  SOFT_DROP: 1,
+  HADR_DROP: 2,
+};
 Object.freeze(KEY);
+
+Object.freeze(POINTS);
