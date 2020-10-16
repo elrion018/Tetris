@@ -17,7 +17,9 @@ function play() {
 const moves = {
   [KEY.LEFT]: (p) => ({ ...p, x: p.x - 1 }),
   [KEY.RIGHT]: (p) => ({ ...p, x: p.x + 1 }),
+  [KEY.UP]: (p) => p.rotate(p),
   [KEY.DOWN]: (p) => ({ ...p, y: p.y + 1 }),
+  [KEY.SPACE]: (p) => ({ ...p, y: p.y + 1 }),
 };
 
 document.addEventListener("keydown", (event) => {
@@ -25,10 +27,28 @@ document.addEventListener("keydown", (event) => {
     event.preventDefault();
 
     let p = moves[event.keyCode](board.piece);
-
-    board.piece.move(p);
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    board.piece.draw();
+    if (event.keyCode === KEY.SPACE) {
+      while (board.valid(p)) {
+        board.piece.move(p);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        board.piece.draw();
+        p = moves[KEY.DOWN](board.piece);
+      }
+    } else if (event.keyCode === KEY.UP) {
+      if (board.valid(p)) {
+        board.piece.shape = p.shape;
+        console.log(board.piece);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        board.piece.draw();
+      }
+    } else {
+      if (board.valid(p)) {
+        board.piece.move(p);
+        console.log(board.piece);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        board.piece.draw();
+      }
+    }
   }
 });
 

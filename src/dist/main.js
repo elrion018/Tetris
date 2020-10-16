@@ -113,6 +113,46 @@ var Board = /*#__PURE__*/function () {
         return Array(_constants__WEBPACK_IMPORTED_MODULE_0__.COLS).fill(0);
       });
     }
+  }, {
+    key: "isEmpty",
+    value: function isEmpty(value) {
+      if (value === 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }, {
+    key: "insideWalls",
+    value: function insideWalls(x) {
+      if (x >= 0 && x < _constants__WEBPACK_IMPORTED_MODULE_0__.COLS) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }, {
+    key: "aboveFloor",
+    value: function aboveFloor(y) {
+      if (y < _constants__WEBPACK_IMPORTED_MODULE_0__.ROWS) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }, {
+    key: "valid",
+    value: function valid(p) {
+      var _this = this;
+
+      return p.shape.every(function (row, dy) {
+        return row.every(function (value, dx) {
+          var x = p.x + dx;
+          var y = p.y + dy;
+          return _this.isEmpty(value) || _this.aboveFloor(y) && _this.insideWalls(x);
+        });
+      });
+    }
   }]);
 
   return Board;
@@ -126,9 +166,11 @@ var Board = /*#__PURE__*/function () {
   \*****************************/
 /*! namespace exports */
 /*! export BLOCK_SIZE [provided] [no usage info] [missing usage info prevents renaming] */
+/*! export COLORS [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export COLS [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export KEY [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export ROWS [provided] [no usage info] [missing usage info prevents renaming] */
+/*! export SHAPES [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
 /*! runtime requirements: __webpack_require__.r, __webpack_exports__, __webpack_require__.d, __webpack_require__.* */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
@@ -139,16 +181,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "COLS": () => /* binding */ COLS,
 /* harmony export */   "ROWS": () => /* binding */ ROWS,
 /* harmony export */   "BLOCK_SIZE": () => /* binding */ BLOCK_SIZE,
+/* harmony export */   "COLORS": () => /* binding */ COLORS,
+/* harmony export */   "SHAPES": () => /* binding */ SHAPES,
 /* harmony export */   "KEY": () => /* binding */ KEY
 /* harmony export */ });
 var COLS = 10;
 var ROWS = 20;
-var BLOCK_SIZE = 30; // enum
+var BLOCK_SIZE = 30;
+var COLORS = ["cyan", "blue", "orange", "yellow", "green", "purple", "red"];
+var SHAPES = [[[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 2, 2, 0], [0, 2, 2, 0], [0, 0, 0, 0]], [[3, 0, 0], [3, 3, 3], [0, 0, 0]], [[4, 4, 0], [0, 4, 4], [0, 0, 0]], [[0, 5, 0], [5, 5, 5], [0, 0, 0]]]; // enum
 
 var KEY = {
   LEFT: 37,
   RIGHT: 39,
-  DOWN: 40
+  UP: 38,
+  DOWN: 40,
+  SPACE: 32
 };
 Object.freeze(KEY);
 
@@ -200,7 +248,13 @@ var moves = (_moves = {}, _defineProperty(_moves, _constants__WEBPACK_IMPORTED_M
   return _objectSpread(_objectSpread({}, p), {}, {
     x: p.x + 1
   });
+}), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.UP, function (p) {
+  return p.rotate(p);
 }), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN, function (p) {
+  return _objectSpread(_objectSpread({}, p), {}, {
+    y: p.y + 1
+  });
+}), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.SPACE, function (p) {
   return _objectSpread(_objectSpread({}, p), {}, {
     y: p.y + 1
   });
@@ -209,9 +263,29 @@ document.addEventListener("keydown", function (event) {
   if (moves[event.keyCode]) {
     event.preventDefault();
     var p = moves[event.keyCode](board.piece);
-    board.piece.move(p);
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    board.piece.draw();
+
+    if (event.keyCode === _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.SPACE) {
+      while (board.valid(p)) {
+        board.piece.move(p);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        board.piece.draw();
+        p = moves[_constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN](board.piece);
+      }
+    } else if (event.keyCode === _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.UP) {
+      if (board.valid(p)) {
+        board.piece.shape = p.shape;
+        console.log(board.piece);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        board.piece.draw();
+      }
+    } else {
+      if (board.valid(p)) {
+        board.piece.move(p);
+        console.log(board.piece);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        board.piece.draw();
+      }
+    }
   }
 });
 ctx.canvas.width = _constants__WEBPACK_IMPORTED_MODULE_0__.COLS * _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE;
@@ -283,6 +357,24 @@ var Piece = /*#__PURE__*/function () {
           }
         });
       });
+    }
+  }, {
+    key: "rotate",
+    value: function rotate(p) {
+      var clone = JSON.parse(JSON.stringify(p));
+
+      for (var y = 0; y < clone.shape.length; ++y) {
+        for (var x = 0; x < y; ++x) {
+          var _ref = [clone.shape[y][x], p.shape[x][y]];
+          clone.shape[x][y] = _ref[0];
+          clone.shape[y][x] = _ref[1];
+        }
+      }
+
+      clone.shape.forEach(function (row) {
+        return row.reverse();
+      });
+      return clone;
     }
   }, {
     key: "move",
