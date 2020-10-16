@@ -121,7 +121,6 @@ var Board = /*#__PURE__*/function () {
     key: "getNewPiece",
     value: function getNewPiece() {
       this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-      console.table(board.grid);
       var piece = new _piece__WEBPACK_IMPORTED_MODULE_1__.Piece(this.ctx);
       piece.draw();
       this.piece = piece;
@@ -178,9 +177,15 @@ var Board = /*#__PURE__*/function () {
         this.piece.move(p);
       } else {
         this.freeze();
+
+        if (this.piece.y === 0) {
+          return false;
+        }
+
         this.getNewPiece();
-        console.table(this.grid);
       }
+
+      return true;
     }
   }, {
     key: "freeze",
@@ -238,7 +243,7 @@ var Board = /*#__PURE__*/function () {
     }
   }, {
     key: "clearLine",
-    value: function clearLine(account) {
+    value: function clearLine(account, time) {
       var _this4 = this;
 
       var lines = 0;
@@ -255,7 +260,14 @@ var Board = /*#__PURE__*/function () {
       });
 
       if (lines > 0) {
-        account.score += this.getClearLinePoints(lines);
+        account.score += (account.level + 1) * this.getClearLinePoints(lines);
+        account.lines += lines;
+
+        if (account.lines >= _constants__WEBPACK_IMPORTED_MODULE_0__.LINES_PER_LEVEL) {
+          account.level++;
+          account.lines -= _constants__WEBPACK_IMPORTED_MODULE_0__.LINES_PER_LEVEL;
+          time.level = _constants__WEBPACK_IMPORTED_MODULE_0__.LEVEL[account.level];
+        }
       }
     }
   }]);
@@ -273,7 +285,8 @@ var Board = /*#__PURE__*/function () {
 /*! export BLOCK_SIZE [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export COLORS [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export COLS [provided] [no usage info] [missing usage info prevents renaming] */
-/*! export KEY [provided] [no usage info] [missing usage info prevents renaming] */
+/*! export LEVEL [provided] [no usage info] [missing usage info prevents renaming] */
+/*! export LINES_PER_LEVEL [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export POINTS [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export ROWS [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export SHAPES [provided] [no usage info] [missing usage info prevents renaming] */
@@ -289,22 +302,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "BLOCK_SIZE": () => /* binding */ BLOCK_SIZE,
 /* harmony export */   "COLORS": () => /* binding */ COLORS,
 /* harmony export */   "SHAPES": () => /* binding */ SHAPES,
-/* harmony export */   "KEY": () => /* binding */ KEY,
-/* harmony export */   "POINTS": () => /* binding */ POINTS
+/* harmony export */   "POINTS": () => /* binding */ POINTS,
+/* harmony export */   "LEVEL": () => /* binding */ LEVEL,
+/* harmony export */   "LINES_PER_LEVEL": () => /* binding */ LINES_PER_LEVEL
 /* harmony export */ });
 var COLS = 10;
 var ROWS = 20;
 var BLOCK_SIZE = 30;
 var COLORS = ["cyan", "blue", "orange", "yellow", "green", "purple", "red"];
-var SHAPES = [[[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 2, 2, 0], [0, 2, 2, 0], [0, 0, 0, 0]], [[3, 0, 0], [3, 3, 3], [0, 0, 0]], [[4, 4, 0], [0, 4, 4], [0, 0, 0]], [[0, 5, 0], [5, 5, 5], [0, 0, 0]], [[0, 6, 6], [6, 6, 0], [0, 0, 0]], [[0, 0, 7], [7, 7, 7], [0, 0, 0]]]; // enum
-
-var KEY = {
-  LEFT: 37,
-  RIGHT: 39,
-  UP: 38,
-  DOWN: 40,
-  SPACE: 32
-};
+var SHAPES = [[[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]], [[0, 0, 0, 0], [0, 2, 2, 0], [0, 2, 2, 0], [0, 0, 0, 0]], [[3, 0, 0], [3, 3, 3], [0, 0, 0]], [[4, 4, 0], [0, 4, 4], [0, 0, 0]], [[0, 5, 0], [5, 5, 5], [0, 0, 0]], [[0, 6, 6], [6, 6, 0], [0, 0, 0]], [[0, 0, 7], [7, 7, 7], [0, 0, 0]]];
 var POINTS = {
   SINGLE: 100,
   DOUBLE: 300,
@@ -313,8 +319,21 @@ var POINTS = {
   SOFT_DROP: 1,
   HADR_DROP: 2
 };
-Object.freeze(KEY);
+var LEVEL = {
+  0: 800,
+  1: 720,
+  2: 640,
+  3: 560,
+  4: 480,
+  5: 400,
+  6: 320,
+  7: 240,
+  8: 160,
+  9: 80
+};
+var LINES_PER_LEVEL = 10;
 Object.freeze(POINTS);
+Object.freeze(LEVEL);
 
 /***/ }),
 
@@ -331,8 +350,6 @@ Object.freeze(POINTS);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
 /* harmony import */ var _board__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./board */ "./src/js/board.js");
-var _moves;
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -347,9 +364,11 @@ ctx.canvas.width = _constants__WEBPACK_IMPORTED_MODULE_0__.COLS * _constants__WE
 ctx.canvas.height = _constants__WEBPACK_IMPORTED_MODULE_0__.ROWS * _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE;
 ctx.scale(_constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE, _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE);
 var time = null;
+var requestId = null;
 var accountValues = {
   score: 0,
-  lines: 0
+  lines: 0,
+  level: 0
 };
 var account = new Proxy(accountValues, {
   set: function set(target, prop, value) {
@@ -360,45 +379,51 @@ var account = new Proxy(accountValues, {
 });
 var board = new _board__WEBPACK_IMPORTED_MODULE_1__.Board(ctx); // keys
 
-var moves = (_moves = {}, _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.LEFT, function (p) {
-  return _objectSpread(_objectSpread({}, p), {}, {
-    x: p.x - 1
-  });
-}), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.RIGHT, function (p) {
-  return _objectSpread(_objectSpread({}, p), {}, {
-    x: p.x + 1
-  });
-}), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.UP, function (p) {
-  return p.rotate(p);
-}), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN, function (p) {
-  return _objectSpread(_objectSpread({}, p), {}, {
-    y: p.y + 1
-  });
-}), _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.SPACE, function (p) {
-  return _objectSpread(_objectSpread({}, p), {}, {
-    y: p.y + 1
-  });
-}), _moves);
+var moves = {
+  ArrowLeft: function ArrowLeft(p) {
+    return _objectSpread(_objectSpread({}, p), {}, {
+      x: p.x - 1
+    });
+  },
+  ArrowRight: function ArrowRight(p) {
+    return _objectSpread(_objectSpread({}, p), {}, {
+      x: p.x + 1
+    });
+  },
+  ArrowUp: function ArrowUp(p) {
+    return p.rotate(p);
+  },
+  ArrowDown: function ArrowDown(p) {
+    return _objectSpread(_objectSpread({}, p), {}, {
+      y: p.y + 1
+    });
+  },
+  Space: function Space(p) {
+    return _objectSpread(_objectSpread({}, p), {}, {
+      y: p.y + 1
+    });
+  }
+};
 document.addEventListener("keydown", function (event) {
-  if (moves[event.keyCode]) {
+  if (moves[event.code]) {
     event.preventDefault();
-    var p = moves[event.keyCode](board.piece);
+    var p = moves[event.code](board.piece);
 
-    if (event.keyCode === _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.SPACE) {
+    if (event.code === "Space") {
       while (board.valid(p)) {
         account.score += _constants__WEBPACK_IMPORTED_MODULE_0__.POINTS.HADR_DROP;
         board.piece.move(p);
         board.draw();
-        p = moves[_constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN](board.piece);
+        p = moves["Space"](board.piece);
       }
-    } else if (event.keyCode === _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.UP) {
+    } else if (event.code === "ArrowUp") {
       if (board.valid(p)) {
         board.piece.shape = p.shape;
         board.draw();
       }
     } else {
       if (board.valid(p)) {
-        if (event.keyCode === _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN) {
+        if (event.code === "ArrowDown") {
           account.score += _constants__WEBPACK_IMPORTED_MODULE_0__.POINTS.SOFT_DROP;
         }
 
@@ -416,11 +441,23 @@ function play() {
 
 function resetGame() {
   board.reset();
+  account.score = 0;
+  account.lines = 0;
+  account.level = 0;
   time = {
     start: 0,
     elapsed: 0,
-    level: 1000
+    level: _constants__WEBPACK_IMPORTED_MODULE_0__.LEVEL[0]
   };
+}
+
+function gameOver() {
+  cancelAnimationFrame(requestId);
+  ctx.fillStyle = "black";
+  ctx.fillRect(1, 3, 8, 1.2);
+  ctx.font = "1px Arial";
+  ctx.fillStyle = "red";
+  ctx.fillText("GAME OVER", 1.8, 4);
 }
 
 function animate() {
@@ -429,13 +466,17 @@ function animate() {
 
   if (time.elapsed > time.level) {
     time.start = now;
-    board.drop();
+
+    if (!board.drop()) {
+      gameOver();
+      return;
+    }
   }
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   board.draw();
-  board.clearLine(account);
-  requestAnimationFrame(animate);
+  board.clearLine(account, time);
+  requestId = requestAnimationFrame(animate);
 }
 
 function updateAccount(prop, value) {

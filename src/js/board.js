@@ -1,4 +1,11 @@
-import { ROWS, COLS, COLORS, POINTS } from "./constants";
+import {
+  ROWS,
+  COLS,
+  COLORS,
+  POINTS,
+  LEVEL,
+  LINES_PER_LEVEL,
+} from "./constants";
 import { Piece } from "./piece";
 export class Board {
   grid;
@@ -16,7 +23,6 @@ export class Board {
 
   getNewPiece() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-    console.table(board.grid);
     let piece = new Piece(this.ctx);
     piece.draw();
     this.piece = piece;
@@ -61,9 +67,12 @@ export class Board {
       this.piece.move(p);
     } else {
       this.freeze();
+      if (this.piece.y === 0) {
+        return false;
+      }
       this.getNewPiece();
-      console.table(this.grid);
     }
+    return true;
   }
   freeze() {
     this.piece.shape.forEach((row, y) => {
@@ -104,7 +113,7 @@ export class Board {
     }
   }
 
-  clearLine(account) {
+  clearLine(account, time) {
     let lines = 0;
     this.grid.forEach((row, y) => {
       if (row.every((value) => value > 0)) {
@@ -114,7 +123,15 @@ export class Board {
       }
     });
     if (lines > 0) {
-      account.score += this.getClearLinePoints(lines);
+      account.score += (account.level + 1) * this.getClearLinePoints(lines);
+      account.lines += lines;
+
+      if (account.lines >= LINES_PER_LEVEL) {
+        account.level++;
+        account.lines -= LINES_PER_LEVEL;
+
+        time.level = LEVEL[account.level];
+      }
     }
   }
 }

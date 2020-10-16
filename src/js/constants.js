@@ -52,15 +52,6 @@ export const SHAPES = [
   ],
 ];
 
-// enum
-export const KEY = {
-  LEFT: 37,
-  RIGHT: 39,
-  UP: 38,
-  DOWN: 40,
-  SPACE: 32,
-};
-
 export const POINTS = {
   SINGLE: 100,
   DOUBLE: 300,
@@ -69,6 +60,20 @@ export const POINTS = {
   SOFT_DROP: 1,
   HADR_DROP: 2,
 };
-Object.freeze(KEY);
 
+export const LEVEL = {
+  0: 800,
+  1: 720,
+  2: 640,
+  3: 560,
+  4: 480,
+  5: 400,
+  6: 320,
+  7: 240,
+  8: 160,
+  9: 80,
+};
+
+export const LINES_PER_LEVEL = 10;
 Object.freeze(POINTS);
+Object.freeze(LEVEL);
