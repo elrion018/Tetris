@@ -83,6 +83,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "Board": () => /* binding */ Board
 /* harmony export */ });
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "./src/js/constants.js");
+/* harmony import */ var _piece__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./piece */ "./src/js/piece.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -90,6 +95,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 var Board = /*#__PURE__*/function () {
@@ -109,6 +115,16 @@ var Board = /*#__PURE__*/function () {
     key: "reset",
     value: function reset() {
       this.grid = this.getEmptyBoard();
+      this.getNewPiece();
+    }
+  }, {
+    key: "getNewPiece",
+    value: function getNewPiece() {
+      this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+      console.table(board.grid);
+      var piece = new _piece__WEBPACK_IMPORTED_MODULE_1__.Piece(this.ctx);
+      piece.draw();
+      this.piece = piece;
     }
   }, {
     key: "getEmptyBoard",
@@ -130,21 +146,13 @@ var Board = /*#__PURE__*/function () {
     }
   }, {
     key: "insideWalls",
-    value: function insideWalls(x) {
-      if (x >= 0 && x < _constants__WEBPACK_IMPORTED_MODULE_0__.COLS) {
-        return true;
-      } else {
-        return false;
-      }
+    value: function insideWalls(x, y) {
+      return x >= 0 && x < _constants__WEBPACK_IMPORTED_MODULE_0__.COLS && y < _constants__WEBPACK_IMPORTED_MODULE_0__.ROWS;
     }
   }, {
-    key: "aboveFloor",
-    value: function aboveFloor(y) {
-      if (y < _constants__WEBPACK_IMPORTED_MODULE_0__.ROWS) {
-        return true;
-      } else {
-        return false;
-      }
+    key: "notQccupied",
+    value: function notQccupied(x, y) {
+      return this.grid[y] && this.grid[y][x] === 0;
     }
   }, {
     key: "valid",
@@ -155,9 +163,24 @@ var Board = /*#__PURE__*/function () {
         return row.every(function (value, dx) {
           var x = p.x + dx;
           var y = p.y + dy;
-          return _this.isEmpty(value) || _this.aboveFloor(y) && _this.insideWalls(x);
+          return _this.isEmpty(value) || _this.notQccupied(x, y) && _this.insideWalls(x, y);
         });
       });
+    }
+  }, {
+    key: "drop",
+    value: function drop() {
+      var p = _objectSpread(_objectSpread({}, this.piece), {}, {
+        y: this.piece.y + 1
+      });
+
+      if (this.valid(p)) {
+        this.piece.move(p);
+      } else {
+        this.freeze();
+        this.getNewPiece();
+        console.table(this.grid);
+      }
     }
   }, {
     key: "freeze",
@@ -180,7 +203,7 @@ var Board = /*#__PURE__*/function () {
       this.grid.forEach(function (row, y) {
         row.forEach(function (value, x) {
           if (value > 0) {
-            _this3.ctx.fillStyle = _constants__WEBPACK_IMPORTED_MODULE_0__.COLORS[value];
+            _this3.ctx.fillStyle = _constants__WEBPACK_IMPORTED_MODULE_0__.COLORS[value - 1];
 
             _this3.ctx.fillRect(x, y, 1, 1);
           }
@@ -192,6 +215,21 @@ var Board = /*#__PURE__*/function () {
     value: function draw() {
       this.piece.draw();
       this.drawBoard();
+    }
+  }, {
+    key: "clearLine",
+    value: function clearLine() {
+      var _this4 = this;
+
+      this.grid.forEach(function (row, y) {
+        if (row.every(function (value) {
+          return value > 0;
+        })) {
+          _this4.grid.splice(y, 1);
+
+          _this4.grid.unshift(Array(_constants__WEBPACK_IMPORTED_MODULE_0__.COLS).fill(0));
+        }
+      });
     }
   }]);
 
@@ -302,11 +340,6 @@ function play() {
 
 function resetGame() {
   board.reset();
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  console.table(board.grid);
-  var piece = new _piece__WEBPACK_IMPORTED_MODULE_2__.Piece(ctx);
-  piece.draw();
-  board.piece = piece;
   time = {
     start: 0,
     elapsed: 0,
@@ -320,23 +353,13 @@ function animate() {
 
   if (time.elapsed > time.level) {
     time.start = now;
-    drop();
+    board.drop();
   }
 
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   board.draw();
+  board.clearLine();
   requestAnimationFrame(animate);
-}
-
-function drop() {
-  var p = moves[_constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN](board.piece);
-
-  if (board.valid(p)) {
-    board.piece.move(p);
-  } else {
-    board.freeze();
-    console.table(board.grid);
-  }
 }
 
 document.addEventListener("keydown", function (event) {
@@ -413,7 +436,7 @@ var Piece = /*#__PURE__*/function () {
   _createClass(Piece, [{
     key: "spawn",
     value: function spawn() {
-      var typeId = this.randomizePieceType(_constants__WEBPACK_IMPORTED_MODULE_0__.SHAPES.length);
+      var typeId = this.randomizePieceType(_constants__WEBPACK_IMPORTED_MODULE_0__.COLORS.length);
       this.shape = _constants__WEBPACK_IMPORTED_MODULE_0__.SHAPES[typeId];
       this.color = _constants__WEBPACK_IMPORTED_MODULE_0__.COLORS[typeId];
       this.x = 3;

@@ -26,11 +26,6 @@ function play() {
 
 function resetGame() {
   board.reset();
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  console.table(board.grid);
-  let piece = new Piece(ctx);
-  piece.draw();
-  board.piece = piece;
   time = { start: 0, elapsed: 0, level: 1000 };
 }
 
@@ -38,21 +33,12 @@ function animate(now = 0) {
   time.elapsed = now - time.start;
   if (time.elapsed > time.level) {
     time.start = now;
-    drop();
+    board.drop();
   }
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   board.draw();
+  board.clearLine();
   requestAnimationFrame(animate);
-}
-
-function drop() {
-  let p = moves[KEY.DOWN](board.piece);
-  if (board.valid(p)) {
-    board.piece.move(p);
-  } else {
-    board.freeze();
-    console.table(board.grid);
-  }
 }
 
 document.addEventListener("keydown", (event) => {

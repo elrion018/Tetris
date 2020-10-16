@@ -13,7 +13,7 @@ export class Piece {
   }
 
   spawn() {
-    const typeId = this.randomizePieceType(SHAPES.length);
+    const typeId = this.randomizePieceType(COLORS.length);
     this.shape = SHAPES[typeId];
     this.color = COLORS[typeId];
 
