@@ -93,10 +93,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 var Board = /*#__PURE__*/function () {
-  function Board() {
+  function Board(ctx) {
     _classCallCheck(this, Board);
 
     _defineProperty(this, "grid", void 0);
+
+    _defineProperty(this, "piece", void 0);
+
+    _defineProperty(this, "ctx", void 0);
+
+    this.ctx = ctx;
   }
 
   _createClass(Board, [{
@@ -152,6 +158,40 @@ var Board = /*#__PURE__*/function () {
           return _this.isEmpty(value) || _this.aboveFloor(y) && _this.insideWalls(x);
         });
       });
+    }
+  }, {
+    key: "freeze",
+    value: function freeze() {
+      var _this2 = this;
+
+      this.piece.shape.forEach(function (row, y) {
+        row.forEach(function (value, x) {
+          if (value > 0) {
+            _this2.grid[y + _this2.piece.y][x + _this2.piece.x] = value;
+          }
+        });
+      });
+    }
+  }, {
+    key: "drawBoard",
+    value: function drawBoard() {
+      var _this3 = this;
+
+      this.grid.forEach(function (row, y) {
+        row.forEach(function (value, x) {
+          if (value > 0) {
+            _this3.ctx.fillStyle = _constants__WEBPACK_IMPORTED_MODULE_0__.COLORS[value];
+
+            _this3.ctx.fillRect(x, y, 1, 1);
+          }
+        });
+      });
+    }
+  }, {
+    key: "draw",
+    value: function draw() {
+      this.piece.draw();
+      this.drawBoard();
     }
   }]);
 
@@ -229,17 +269,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var canvas = document.getElementById("board");
 var ctx = canvas.getContext("2d");
-var board = new _board__WEBPACK_IMPORTED_MODULE_1__.Board();
-
-function play() {
-  board.reset();
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  console.table(board.grid);
-  var piece = new _piece__WEBPACK_IMPORTED_MODULE_2__.Piece(ctx);
-  piece.draw();
-  board.piece = piece; // console.log(board.piece);
-} // keys
-
+ctx.canvas.width = _constants__WEBPACK_IMPORTED_MODULE_0__.COLS * _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE;
+ctx.canvas.height = _constants__WEBPACK_IMPORTED_MODULE_0__.ROWS * _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE;
+ctx.scale(_constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE, _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE);
+var time = null;
+var board = new _board__WEBPACK_IMPORTED_MODULE_1__.Board(ctx); // keys
 
 var moves = (_moves = {}, _defineProperty(_moves, _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.LEFT, function (p) {
   return _objectSpread(_objectSpread({}, p), {}, {
@@ -260,6 +294,51 @@ var moves = (_moves = {}, _defineProperty(_moves, _constants__WEBPACK_IMPORTED_M
     y: p.y + 1
   });
 }), _moves);
+
+function play() {
+  resetGame();
+  animate();
+}
+
+function resetGame() {
+  board.reset();
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  console.table(board.grid);
+  var piece = new _piece__WEBPACK_IMPORTED_MODULE_2__.Piece(ctx);
+  piece.draw();
+  board.piece = piece;
+  time = {
+    start: 0,
+    elapsed: 0,
+    level: 1000
+  };
+}
+
+function animate() {
+  var now = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  time.elapsed = now - time.start;
+
+  if (time.elapsed > time.level) {
+    time.start = now;
+    drop();
+  }
+
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  board.draw();
+  requestAnimationFrame(animate);
+}
+
+function drop() {
+  var p = moves[_constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN](board.piece);
+
+  if (board.valid(p)) {
+    board.piece.move(p);
+  } else {
+    board.freeze();
+    console.table(board.grid);
+  }
+}
+
 document.addEventListener("keydown", function (event) {
   if (moves[event.keyCode]) {
     event.preventDefault();
@@ -268,30 +347,22 @@ document.addEventListener("keydown", function (event) {
     if (event.keyCode === _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.SPACE) {
       while (board.valid(p)) {
         board.piece.move(p);
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        board.piece.draw();
+        board.draw();
         p = moves[_constants__WEBPACK_IMPORTED_MODULE_0__.KEY.DOWN](board.piece);
       }
     } else if (event.keyCode === _constants__WEBPACK_IMPORTED_MODULE_0__.KEY.UP) {
       if (board.valid(p)) {
         board.piece.shape = p.shape;
-        console.log(board.piece);
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        board.piece.draw();
+        board.draw();
       }
     } else {
       if (board.valid(p)) {
         board.piece.move(p);
-        console.log(board.piece);
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        board.piece.draw();
+        board.draw();
       }
     }
   }
 });
-ctx.canvas.width = _constants__WEBPACK_IMPORTED_MODULE_0__.COLS * _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE;
-ctx.canvas.height = _constants__WEBPACK_IMPORTED_MODULE_0__.ROWS * _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE;
-ctx.scale(_constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE, _constants__WEBPACK_IMPORTED_MODULE_0__.BLOCK_SIZE);
 window.play = play;
 
 /***/ }),

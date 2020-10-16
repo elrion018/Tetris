@@ -1,7 +1,13 @@
-import { ROWS, COLS } from "./constants";
+import { ROWS, COLS, COLORS } from "./constants";
 
 export class Board {
   grid;
+  piece;
+  ctx;
+
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
 
   reset() {
     this.grid = this.getEmptyBoard();
@@ -44,5 +50,28 @@ export class Board {
         );
       });
     });
+  }
+  freeze() {
+    this.piece.shape.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.grid[y + this.piece.y][x + this.piece.x] = value;
+        }
+      });
+    });
+  }
+  drawBoard() {
+    this.grid.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.ctx.fillStyle = COLORS[value];
+          this.ctx.fillRect(x, y, 1, 1);
+        }
+      });
+    });
+  }
+  draw() {
+    this.piece.draw();
+    this.drawBoard();
   }
 }
