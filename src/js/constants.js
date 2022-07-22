@@ -3,6 +3,7 @@ export const BOARD_ID_SELECTOR = '#board';
 export const COLS = 10;
 export const ROWS = 20;
 export const BLOCK_SIZE = 30;
+export const ZERO = 0;
 
 export const COLORS = [
   'cyan',
@@ -59,8 +60,17 @@ export const POINTS = {
   DOUBLE: 300,
   TRIPLE: 500,
   TETRIS: 800,
+  UPPER_TETRIS: 1600,
+
   SOFT_DROP: 1,
   HADR_DROP: 2,
+};
+
+export const LINES = {
+  SINGLE: 1,
+  DOUBLE: 2,
+  TRIPLE: 3,
+  TETRIS: 4,
 };
 
 export const LEVEL = {
