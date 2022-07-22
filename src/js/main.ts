@@ -1,3 +1,6 @@
+import { Game } from './game';
+import { Board } from './board';
+
 import {
   COLS,
   ROWS,
@@ -6,7 +9,6 @@ import {
   LEVEL,
   BOARD_ID_SELECTOR,
 } from './constants';
-import { Board } from './board';
 import '../css/styles.css';
 
 const getContext = () => {
@@ -15,6 +17,14 @@ const getContext = () => {
   if (canvas === null) return null;
 
   return canvas.getContext('2d');
+};
+
+const play = () => {
+  const context = getContext();
+
+  if (context !== null) new Game({ context });
+
+  animate();
 };
 
 const context = getContext();
@@ -76,11 +86,6 @@ document.addEventListener('keydown', (event) => {
     }
   }
 });
-
-function play() {
-  resetGame();
-  animate();
-}
 
 function resetGame() {
   board.reset();
