@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: {
-    main: ['./src/js/main.js'],
+    main: ['./src/js/main.ts'],
   },
   // 컴파일 + 번들링된 js 파일이 저장될 경로와 이름 지정
   output: {

@@ -22,16 +22,14 @@ const getContext = () => {
 const play = () => {
   const context = getContext();
 
-  if (context !== null) new Game({ context });
+  if (context !== null) {
+    const game = new Game({ context });
+  }
 
   animate();
 };
 
 const context = getContext();
-
-context.canvas.width = COLS * BLOCK_SIZE;
-context.canvas.height = ROWS * BLOCK_SIZE;
-context.scale(BLOCK_SIZE, BLOCK_SIZE);
 
 let time = null;
 let requestId = null;

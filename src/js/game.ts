@@ -4,17 +4,28 @@ interface Props {
   context: CanvasRenderingContext2D;
 }
 
-export const Game = ({ context }: Props) => {
-  const userInfo = new Proxy({ score: 0, lines: 0, level: 0 }, {});
-  const board = new Board();
+export class Game {
+  userInfo;
+  board;
+  requestId;
 
-  const reset = () => {
-    board.reset();
+  constructor({ context }: Props) {
+    this.userInfo = new Proxy({ score: 0, lines: 0, level: 0 }, {});
+    this.board = new Board({ context });
+    this.requestId = 0;
+  }
 
-    userInfo.score = 0;
-    userInfo.level = 0;
-    userInfo.lines = 0;
+  reset() {
+    this.board.reset();
+
+    this.userInfo.score = 0;
+    this.userInfo.level = 0;
+    this.userInfo.lines = 0;
+  }
+
+  animate = () => {
+    this.requestId = requestAnimationFrame(this.animate);
   };
 
-  reset();
-};
+  this.reset();
+}

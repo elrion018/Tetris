@@ -14,6 +14,11 @@ interface Props {
 }
 
 export const Board = ({ context }: Props) => {
+  const reset = () => {
+    grid = getGrid();
+    piece = getPiece();
+  };
+
   const setBoardSize = () => {
     context.canvas.width = COLS * BLOCK_SIZE;
     context.canvas.height = ROWS * BLOCK_SIZE;
@@ -21,9 +26,10 @@ export const Board = ({ context }: Props) => {
 
   const setBoardScale = () => context.scale(BLOCK_SIZE, BLOCK_SIZE);
 
-  const reset = () => {
-    grid = getGrid();
-    piece = getPiece();
+  const cleanBoard = () => {
+    const { width, height } = context.canvas;
+
+    context.clearRect(0, 0, width, height);
   };
 
   const getPiece = () => {
