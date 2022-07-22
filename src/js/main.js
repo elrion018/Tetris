@@ -1,7 +1,9 @@
-import { COLS, ROWS, BLOCK_SIZE, POINTS, LEVEL } from "./constants";
-import { Board } from "./board";
-const canvas = document.getElementById("board");
-const ctx = canvas.getContext("2d");
+import { COLS, ROWS, BLOCK_SIZE, POINTS, LEVEL } from './constants';
+import { Board } from './board';
+import '../css/styles.css';
+
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
 ctx.canvas.width = COLS * BLOCK_SIZE;
 ctx.canvas.height = ROWS * BLOCK_SIZE;
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
@@ -31,26 +33,26 @@ const moves = {
   Space: (p) => ({ ...p, y: p.y + 1 }),
 };
 
-document.addEventListener("keydown", (event) => {
+document.addEventListener('keydown', (event) => {
   if (moves[event.code]) {
     event.preventDefault();
 
     let p = moves[event.code](board.piece);
-    if (event.code === "Space") {
+    if (event.code === 'Space') {
       while (board.valid(p)) {
         account.score += POINTS.HADR_DROP;
         board.piece.move(p);
         board.draw();
-        p = moves["Space"](board.piece);
+        p = moves['Space'](board.piece);
       }
-    } else if (event.code === "ArrowUp") {
+    } else if (event.code === 'ArrowUp') {
       if (board.valid(p)) {
         board.piece.shape = p.shape;
         board.draw();
       }
     } else {
       if (board.valid(p)) {
-        if (event.code === "ArrowDown") {
+        if (event.code === 'ArrowDown') {
           account.score += POINTS.SOFT_DROP;
         }
         board.piece.move(p);
@@ -75,11 +77,11 @@ function resetGame() {
 
 function gameOver() {
   cancelAnimationFrame(requestId);
-  ctx.fillStyle = "black";
+  ctx.fillStyle = 'black';
   ctx.fillRect(1, 3, 8, 1.2);
-  ctx.font = "1px Arial";
-  ctx.fillStyle = "red";
-  ctx.fillText("GAME OVER", 1.8, 4);
+  ctx.font = '1px Arial';
+  ctx.fillStyle = 'red';
+  ctx.fillText('GAME OVER', 1.8, 4);
 }
 
 function animate(now = 0) {

@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: {
@@ -15,7 +16,10 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Tetris',
+      template: 'index.html',
     }),
+
+    new MiniCssExtractPlugin({}),
   ],
 
   module: {
@@ -23,6 +27,11 @@ module.exports = {
       {
         test: /\.ts$/i,
         loader: 'ts-loader',
+        exclude: ['/node_modules'],
+      },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
         exclude: ['/node_modules'],
       },
     ],
