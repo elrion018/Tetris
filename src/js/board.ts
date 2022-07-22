@@ -62,7 +62,9 @@ export class Board {
   }
 
   getGrid() {
-    return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    return Array.from({ length: ROWS }, () =>
+      Array.from({ length: COLS }).map(() => 0)
+    );
   }
 
   isEmpty(value) {
@@ -118,7 +120,9 @@ export class Board {
     });
   }
 
-  drawBoard() {
+  drawPieces() {
+    this.piece.draw();
+
     this.grid.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
@@ -127,11 +131,6 @@ export class Board {
         }
       });
     });
-  }
-
-  draw() {
-    this.piece.draw();
-    drawBoard();
   }
 
   getClearLinePoints = (lines) => {
@@ -149,25 +148,32 @@ export class Board {
     }
   };
 
-  clearLine = (account, time) => {
-    let lines = 0;
-    this.grid.forEach((row, y) => {
+  getClearedLines() {
+    const copiedGrid = [...this.grid];
+    const lines = this.grid.reduce((acc, row, rowIndex) => {
       if (row.every((value) => value > 0)) {
-        lines++;
-        this.grid.splice(y, 1);
-        this.grid.unshift(Array(COLS).fill(0));
-      }
-    });
-    if (lines > 0) {
-      account.score += (account.level + 1) * this.getClearLinePoints(lines);
-      account.lines += lines;
+        copiedGrid.splice(rowIndex, 1);
+        copiedGrid.unshift(Array.from({ length: COLS }).map(() => 0));
 
-      if (account.lines >= LINES_PER_LEVEL) {
-        account.level++;
-        account.lines -= LINES_PER_LEVEL;
-
-        time.level = LEVEL[account.level];
+        return acc + 1;
       }
-    }
-  };
+
+      return acc;
+    }, 0);
+
+    this.grid = copiedGrid;
+
+    return lines;
+    // if (lines > 0) {
+    //   account.score += (account.level + 1) * this.getClearLinePoints(lines);
+    //   account.lines += lines;
+
+    //   if (account.lines >= LINES_PER_LEVEL) {
+    //     account.level++;
+    //     account.lines -= LINES_PER_LEVEL;
+
+    //     time.level = LEVEL[account.level];
+    //   }
+    // }
+  }
 }

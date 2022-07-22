@@ -23,9 +23,12 @@ export class Game {
     this.userInfo.lines = 0;
   }
 
-  animate() {
+  keep() {
     this.board.cleanBoard();
+    this.board.drawPieces();
 
-    this.requestId = requestAnimationFrame(this.animate);
+    const lines = this.board.getClearedLines();
+
+    this.requestId = requestAnimationFrame(this.keep);
   }
 }
