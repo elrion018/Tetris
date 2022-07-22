@@ -4,6 +4,7 @@ import {
   COLORS,
   POINTS,
   LEVEL,
+  BLOCK_SIZE,
   LINES_PER_LEVEL,
 } from './constants';
 import { Piece } from './piece';
@@ -13,6 +14,13 @@ interface Props {
 }
 
 export const Board = ({ context }: Props) => {
+  const setBoardSize = () => {
+    context.canvas.width = COLS * BLOCK_SIZE;
+    context.canvas.height = ROWS * BLOCK_SIZE;
+  };
+
+  const setBoardScale = () => context.scale(BLOCK_SIZE, BLOCK_SIZE);
+
   const reset = () => {
     grid = getGrid();
     piece = getPiece();
@@ -132,4 +140,8 @@ export const Board = ({ context }: Props) => {
       }
     }
   };
+
+  setBoardSize();
+  setBoardScale();
+  reset();
 };
