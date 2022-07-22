@@ -22,9 +22,7 @@ const getContext = () => {
 const play = () => {
   const context = getContext();
 
-  if (context !== null) {
-    const game = new Game({ context });
-  }
+  if (context !== null) new Game({ context });
 
   animate();
 };

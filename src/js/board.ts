@@ -13,104 +13,128 @@ interface Props {
   context: CanvasRenderingContext2D;
 }
 
-export const Board = ({ context }: Props) => {
-  const reset = () => {
-    grid = getGrid();
-    piece = getPiece();
-  };
+export class Board {
+  context;
+  grid;
+  piece;
 
-  const setBoardSize = () => {
-    context.canvas.width = COLS * BLOCK_SIZE;
-    context.canvas.height = ROWS * BLOCK_SIZE;
-  };
+  constructor({ context }: Props) {
+    this.context = context;
+    this.grid = this.getGrid();
+    this.piece = this.getPiece();
 
-  const setBoardScale = () => context.scale(BLOCK_SIZE, BLOCK_SIZE);
+    this.setBoardSize();
+    this.setBoardScale();
+    this.reset();
+  }
 
-  const cleanBoard = () => {
-    const { width, height } = context.canvas;
+  reset() {
+    this.grid = this.getGrid();
+    this.piece = this.getPiece();
+  }
 
-    context.clearRect(0, 0, width, height);
-  };
+  setBoardSize() {
+    this.context.canvas.width = COLS * BLOCK_SIZE;
+    this.context.canvas.height = ROWS * BLOCK_SIZE;
+  }
 
-  const getPiece = () => {
-    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    let piece = new Piece(context);
+  setBoardScale() {
+    this.context.scale(BLOCK_SIZE, BLOCK_SIZE);
+  }
+
+  cleanBoard() {
+    const { width, height } = this.context.canvas;
+
+    this.context.clearRect(0, 0, width, height);
+  }
+
+  getPiece() {
+    this.context.clearRect(
+      0,
+      0,
+      this.context.canvas.width,
+      this.context.canvas.height
+    );
+    let piece = new Piece(this.context);
     piece.draw();
 
     return piece;
-  };
+  }
 
-  const getGrid = () => Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+  getGrid() {
+    return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+  }
 
-  let grid = getGrid();
-  let piece = getPiece();
-
-  const isEmpty = (value) => {
+  isEmpty(value) {
     if (value === 0) {
       return true;
     } else {
       return false;
     }
-  };
+  }
 
-  const insideWalls = (x, y) => {
+  insideWalls(x, y) {
     return x >= 0 && x < COLS && y < ROWS;
-  };
+  }
 
-  const notQccupied = (x, y) => {
-    return grid[y] && grid[y][x] === 0;
-  };
+  notQccupied(x, y) {
+    return this.grid[y] && this.grid[y][x] === 0;
+  }
 
-  const valid = (p) => {
+  valid(p) {
     return p.shape.every((row, dy) => {
       return row.every((value, dx) => {
         let x = p.x + dx;
         let y = p.y + dy;
-        return isEmpty(value) || (notQccupied(x, y) && insideWalls(x, y));
+        return (
+          this.isEmpty(value) ||
+          (this.notQccupied(x, y) && this.insideWalls(x, y))
+        );
       });
     });
-  };
+  }
 
-  const drop = () => {
-    let p = { ...piece, y: piece.y + 1 };
-    if (valid(p)) {
-      piece.move(p);
+  drop() {
+    let p = { ...this.piece, y: this.piece.y + 1 };
+    if (this.valid(p)) {
+      this.piece.move(p);
     } else {
-      freeze();
-      if (piece.y === 0) {
+      this.freeze();
+      if (this.piece.y === 0) {
         return false;
       }
-      getPiece();
+      getthis.piece();
     }
     return true;
-  };
+  }
 
-  const freeze = () => {
-    piece.shape.forEach((row, y) => {
+  freeze() {
+    this.piece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
-          grid[y + piece.y][x + piece.x] = value;
+          this.grid[y + piece.y][x + piece.x] = value;
         }
       });
     });
-  };
+  }
 
-  const drawBoard = () => {
-    grid.forEach((row, y) => {
+  drawBoard() {
+    this.grid.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
-          context.fillStyle = COLORS[value - 1];
-          context.fillRect(x, y, 1, 1);
+          this.context.fillStyle = COLORS[value - 1];
+          this.context.fillRect(x, y, 1, 1);
         }
       });
     });
-  };
-  const draw = () => {
-    piece.draw();
+  }
+
+  draw() {
+    this.piece.draw();
     drawBoard();
-  };
+  }
 
-  const getClearLinePoints = (lines) => {
+  getClearLinePoints = (lines) => {
     switch (lines) {
       case 1:
         return POINTS.SINGLE;
@@ -125,17 +149,17 @@ export const Board = ({ context }: Props) => {
     }
   };
 
-  const clearLine = (account, time) => {
+  clearLine = (account, time) => {
     let lines = 0;
-    grid.forEach((row, y) => {
+    this.grid.forEach((row, y) => {
       if (row.every((value) => value > 0)) {
         lines++;
-        grid.splice(y, 1);
-        grid.unshift(Array(COLS).fill(0));
+        this.grid.splice(y, 1);
+        this.grid.unshift(Array(COLS).fill(0));
       }
     });
     if (lines > 0) {
-      account.score += (account.level + 1) * getClearLinePoints(lines);
+      account.score += (account.level + 1) * this.getClearLinePoints(lines);
       account.lines += lines;
 
       if (account.lines >= LINES_PER_LEVEL) {
@@ -146,8 +170,4 @@ export const Board = ({ context }: Props) => {
       }
     }
   };
-
-  setBoardSize();
-  setBoardScale();
-  reset();
-};
+}

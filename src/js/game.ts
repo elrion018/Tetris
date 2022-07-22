@@ -23,9 +23,9 @@ export class Game {
     this.userInfo.lines = 0;
   }
 
-  animate = () => {
-    this.requestId = requestAnimationFrame(this.animate);
-  };
+  animate() {
+    this.board.cleanBoard();
 
-  this.reset();
+    this.requestId = requestAnimationFrame(this.animate);
+  }
 }
