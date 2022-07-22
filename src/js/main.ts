@@ -1,12 +1,27 @@
-import { COLS, ROWS, BLOCK_SIZE, POINTS, LEVEL } from './constants';
+import {
+  COLS,
+  ROWS,
+  BLOCK_SIZE,
+  POINTS,
+  LEVEL,
+  BOARD_ID_SELECTOR,
+} from './constants';
 import { Board } from './board';
 import '../css/styles.css';
 
-const canvas = document.getElementById('board');
-const ctx = canvas.getContext('2d');
-ctx.canvas.width = COLS * BLOCK_SIZE;
-ctx.canvas.height = ROWS * BLOCK_SIZE;
-ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
+const getContext = () => {
+  const canvas = document.querySelector<HTMLCanvasElement>(BOARD_ID_SELECTOR);
+
+  if (canvas === null) return null;
+
+  return canvas.getContext('2d');
+};
+
+const context = getContext();
+
+context.canvas.width = COLS * BLOCK_SIZE;
+context.canvas.height = ROWS * BLOCK_SIZE;
+context.scale(BLOCK_SIZE, BLOCK_SIZE);
 
 let time = null;
 let requestId = null;
@@ -22,7 +37,7 @@ let account = new Proxy(accountValues, {
     return true;
   },
 });
-let board = new Board(ctx);
+let board = new Board(context);
 
 // keys
 const moves = {
@@ -77,11 +92,11 @@ function resetGame() {
 
 function gameOver() {
   cancelAnimationFrame(requestId);
-  ctx.fillStyle = 'black';
-  ctx.fillRect(1, 3, 8, 1.2);
-  ctx.font = '1px Arial';
-  ctx.fillStyle = 'red';
-  ctx.fillText('GAME OVER', 1.8, 4);
+  context.fillStyle = 'black';
+  context.fillRect(1, 3, 8, 1.2);
+  context.font = '1px Arial';
+  context.fillStyle = 'red';
+  context.fillText('GAME OVER', 1.8, 4);
 }
 
 function animate(now = 0) {
@@ -93,7 +108,7 @@ function animate(now = 0) {
       return;
     }
   }
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
   board.draw();
   board.clearLine(account, time);
 

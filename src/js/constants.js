@@ -1,15 +1,17 @@
+export const BOARD_ID_SELECTOR = '#board';
+
 export const COLS = 10;
 export const ROWS = 20;
 export const BLOCK_SIZE = 30;
 
 export const COLORS = [
-  "cyan",
-  "blue",
-  "orange",
-  "yellow",
-  "green",
-  "purple",
-  "red",
+  'cyan',
+  'blue',
+  'orange',
+  'yellow',
+  'green',
+  'purple',
+  'red',
 ];
 
 export const SHAPES = [
