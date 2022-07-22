@@ -19,6 +19,7 @@
   "homepage": "https://github.com/elrion018/Tetris#readme",
   "devDependencies": {
     "eslint": "^8.20.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "html-webpack-plugin": "^5.5.0",
     "prettier": "^2.7.1",
     "webpack": "^5.73.0",
