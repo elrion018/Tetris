@@ -1,5 +1,6 @@
 import { Board } from './board';
 import { Calculator } from './calculator';
+import { User } from './User';
 
 interface Props {
   context: CanvasRenderingContext2D;
@@ -12,24 +13,21 @@ export interface UserInfo {
 }
 
 export class Game {
-  userInfo: UserInfo;
+  user: User;
   board: Board;
   calculator: Calculator;
   requestId: number;
 
   constructor({ context }: Props) {
-    this.userInfo = new Proxy({ score: 0, lines: 0, level: 1 }, {});
+    this.user = new User();
     this.board = new Board({ context });
-    this.calculator = new Calculator({ userInfo: this.userInfo });
+    this.calculator = new Calculator({ user: this.user });
     this.requestId = 0;
   }
 
   reset() {
     this.board.reset();
-
-    this.userInfo.score = 0;
-    this.userInfo.level = 0;
-    this.userInfo.lines = 0;
+    this.user.reset();
   }
 
   keep() {
@@ -41,16 +39,5 @@ export class Game {
       this.calculator.getCalculatedUserInfoWithLines(lines);
 
     this.requestId = requestAnimationFrame(this.keep);
-  }
-
-  calculateUserInfoWithLines(lines: number): UserInfo | null {
-    if (lines > 0) {
-      const score = this.userInfo.level + 1;
-      const level = this.userInfo.level;
-
-      return { score, lines, level };
-    }
-
-    return null;
   }
 }

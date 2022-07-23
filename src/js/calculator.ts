@@ -1,20 +1,21 @@
-import { UserInfo } from './game';
+import { User, UserInfo } from './User';
 
 import { LINES_PER_LEVEL, LINES, POINTS, ZERO } from './constants';
 
 interface Props {
-  userInfo: UserInfo;
+  user: User;
 }
 
 export class Calculator {
-  userInfo: UserInfo;
+  user: User;
 
-  constructor({ userInfo }: Props) {
-    this.userInfo = userInfo;
+  constructor({ user }: Props) {
+    this.user = user;
   }
 
   getCalculatedUserInfoWithLines(lines: number): UserInfo | null {
-    const { level, score } = this.userInfo;
+    const userInfo = this.user.getUserInfo();
+    const { level, score } = userInfo;
 
     if (lines > 0) {
       const calculatedScore = this.getCalculatedScore(score, lines, level);
