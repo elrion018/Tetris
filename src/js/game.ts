@@ -1,5 +1,6 @@
-import { Board } from './board';
-import { Calculator } from './calculator';
+import { Board } from './Board';
+import { Calculator } from './Calculator';
+import { Timer } from './Timer';
 import { User } from './User';
 import { View } from './View';
 
@@ -12,6 +13,7 @@ export class Game {
   board: Board;
   calculator: Calculator;
   view: View;
+  timer: Timer;
   requestId: number;
 
   constructor({ target }: Props) {
@@ -19,7 +21,14 @@ export class Game {
     this.board = new Board({ target });
     this.calculator = new Calculator({ user: this.user });
     this.view = new View({ target });
+    this.timer = new Timer();
     this.requestId = 0;
+
+    this.start();
+  }
+
+  start() {
+    this.requestId = requestAnimationFrame(this.keep.bind(this));
   }
 
   reset() {
@@ -29,6 +38,7 @@ export class Game {
 
   keep() {
     this.board.cleanBoard();
+    this.board.dropPiece();
     this.board.drawPieces();
 
     const lines = this.board.getClearedLines();
@@ -38,6 +48,12 @@ export class Game {
     if (this.user.updateUserInfo(calculatedUserInfo))
       this.view.render(this.user.getUserInfo());
 
-    this.requestId = requestAnimationFrame(this.keep);
+    this.requestId = requestAnimationFrame(this.keep.bind(this));
+  }
+
+  over() {
+    cancelAnimationFrame(this.requestId);
+
+    this.board.writeGameOverText();
   }
 }

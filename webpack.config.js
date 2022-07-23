@@ -37,6 +37,10 @@ module.exports = {
     ],
   },
 
+  resolve: {
+    extensions: ['.ts'],
+  },
+
   devServer: {
     compress: true,
     port: 3000,

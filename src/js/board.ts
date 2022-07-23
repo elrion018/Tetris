@@ -2,13 +2,17 @@ import {
   ROWS,
   COLS,
   COLORS,
-  POINTS,
-  LEVEL,
   BLOCK_SIZE,
-  LINES_PER_LEVEL,
-  BOARD_ID_SELECTOR,
+  BOARD_CLASS_SELECTOR,
+  ZERO,
+  ONE,
+  PLACEHOLDER,
+  GAME_OVER_RECT_COLOR,
+  GAME_OVER_TEXT_FONT,
+  GAME_OVER_TEXT_COLOR,
+  GAME_OVER_TEXT,
 } from './constants';
-import { Piece } from './piece';
+import { Piece } from './Piece';
 
 interface Props {
   target: HTMLElement;
@@ -17,12 +21,12 @@ interface Props {
 export class Board {
   context;
   grid;
-  piece;
+  currentPiece;
 
   constructor({ target }: Props) {
-    this.context = this.getContext(target, BOARD_ID_SELECTOR);
+    this.context = this.getContext(target, BOARD_CLASS_SELECTOR);
     this.grid = this.getGrid();
-    this.piece = this.getPiece();
+    this.currentPiece = this.getPiece();
 
     this.setBoardSize();
     this.setBoardScale();
@@ -31,7 +35,7 @@ export class Board {
 
   reset() {
     this.grid = this.getGrid();
-    this.piece = this.getPiece();
+    this.currentPiece = this.getPiece();
   }
 
   setBoardSize() {
@@ -48,120 +52,22 @@ export class Board {
   }
 
   getContext(target: HTMLElement, selector: string) {
-    const canvas = document.querySelector<HTMLCanvasElement>(selector);
+    const canvas = target.querySelector<HTMLCanvasElement>(selector);
 
     if (canvas === null) return null;
 
     return canvas.getContext('2d');
   }
 
-  cleanBoard() {
-    if (!this.context) return;
-
-    const { width, height } = this.context.canvas;
-
-    this.context.clearRect(0, 0, width, height);
-  }
-
   getPiece() {
-    this.context.clearRect(
-      0,
-      0,
-      this.context.canvas.width,
-      this.context.canvas.height
-    );
-    let piece = new Piece(this.context);
-    piece.draw();
-
-    return piece;
+    if (this.context) return new Piece({ context: this.context });
   }
 
   getGrid() {
     return Array.from({ length: ROWS }, () =>
-      Array.from({ length: COLS }).map(() => 0)
+      Array.from({ length: COLS }).map(() => PLACEHOLDER)
     );
   }
-
-  isEmpty(value) {
-    if (value === 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  insideWalls(x, y) {
-    return x >= 0 && x < COLS && y < ROWS;
-  }
-
-  notQccupied(x, y) {
-    return this.grid[y] && this.grid[y][x] === 0;
-  }
-
-  valid(p) {
-    return p.shape.every((row, dy) => {
-      return row.every((value, dx) => {
-        let x = p.x + dx;
-        let y = p.y + dy;
-        return (
-          this.isEmpty(value) ||
-          (this.notQccupied(x, y) && this.insideWalls(x, y))
-        );
-      });
-    });
-  }
-
-  drop() {
-    let p = { ...this.piece, y: this.piece.y + 1 };
-    if (this.valid(p)) {
-      this.piece.move(p);
-    } else {
-      this.freeze();
-      if (this.piece.y === 0) {
-        return false;
-      }
-      getthis.piece();
-    }
-    return true;
-  }
-
-  freeze() {
-    this.piece.shape.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value > 0) {
-          this.grid[y + piece.y][x + piece.x] = value;
-        }
-      });
-    });
-  }
-
-  drawPieces() {
-    this.piece.draw();
-
-    this.grid.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value > 0) {
-          this.context.fillStyle = COLORS[value - 1];
-          this.context.fillRect(x, y, 1, 1);
-        }
-      });
-    });
-  }
-
-  getClearLinePoints = (lines) => {
-    switch (lines) {
-      case 1:
-        return POINTS.SINGLE;
-      case 2:
-        return POINTS.DOUBLE;
-      case 3:
-        return POINTS.TRIPLE;
-      case 4:
-        return POINTS.TETRIS;
-      default:
-        return 1600;
-    }
-  };
 
   getClearedLines() {
     const copiedGrid = [...this.grid];
@@ -179,16 +85,100 @@ export class Board {
     this.grid = copiedGrid;
 
     return lines;
-    // if (lines > 0) {
-    //   account.score += (account.level + 1) * this.getClearLinePoints(lines);
-    //   account.lines += lines;
+  }
 
-    //   if (account.lines >= LINES_PER_LEVEL) {
-    //     account.level++;
-    //     account.lines -= LINES_PER_LEVEL;
+  cleanBoard() {
+    if (!this.context) return;
 
-    //     time.level = LEVEL[account.level];
-    //   }
-    // }
+    const { width, height } = this.context.canvas;
+
+    this.context.clearRect(ZERO, ZERO, width, height);
+  }
+
+  drawPieces() {
+    if (!this.context || !this.currentPiece) return;
+
+    this.currentPiece.draw();
+
+    this.grid.forEach((row, yPosition) => {
+      row.forEach((value, xPosition) => {
+        this.drawPiece(value, xPosition, yPosition);
+      });
+    });
+  }
+
+  drawPiece(value: number, xPosition: number, yPosition: number) {
+    if (value > 0 && this.context) {
+      this.context.fillStyle = COLORS[value - 1];
+      this.context.fillRect(xPosition, yPosition, 1, 1);
+    }
+  }
+
+  writeGameOverText() {
+    if (!this.context) return;
+
+    this.context.fillStyle = GAME_OVER_RECT_COLOR;
+    this.context.fillRect(1, 3, 8, 1.2);
+    this.context.font = GAME_OVER_TEXT_FONT;
+    this.context.fillStyle = GAME_OVER_TEXT_COLOR;
+    this.context.fillText(GAME_OVER_TEXT, 1.8, 4);
+  }
+
+  dropPiece() {
+    if (!this.currentPiece) return;
+
+    if (this.checkCanPieceDrop()) {
+      this.currentPiece.drop();
+
+      return;
+    }
+
+    this.fillShapeToGrid();
+  }
+
+  fillShapeToGrid() {
+    if (!this.currentPiece) return;
+
+    const shape = this.currentPiece.getShape();
+    const { xPosition, yPosition } = this.currentPiece.getPositions();
+
+    shape.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) this.grid[y + yPosition][x + xPosition] = value;
+      });
+    });
+  }
+
+  checkPlaceHolder(placeholder: number) {
+    return placeholder === PLACEHOLDER;
+  }
+
+  checkPositionsInsideEdge(xPosition: number, yPosition: number) {
+    return xPosition >= ZERO && xPosition < COLS && yPosition < ROWS;
+  }
+
+  checkNotQccupiedPositions(xPosition: number, yPosition: number) {
+    return this.grid[yPosition][xPosition] === PLACEHOLDER;
+  }
+
+  checkCanPieceDrop() {
+    if (!this.currentPiece) return;
+
+    const shape = this.currentPiece.getShape();
+    const { xPosition, yPosition } = this.currentPiece;
+
+    return shape.every((row, shapeY) => {
+      return row.every((value, shapeX) => {
+        if (this.checkPlaceHolder(value)) return true;
+
+        const dropedXposition = xPosition + shapeX;
+        const dropedYposition = yPosition + shapeY + ONE;
+
+        return (
+          this.checkPositionsInsideEdge(dropedXposition, dropedYposition) &&
+          this.checkNotQccupiedPositions(dropedXposition, dropedYposition)
+        );
+      });
+    });
   }
 }
