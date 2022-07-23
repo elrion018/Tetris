@@ -28,7 +28,7 @@ export class Calculator {
       };
     }
 
-    return { score, lines, level };
+    return null;
   }
 
   getCalculatedScore(score: number, lines: number, level: number) {

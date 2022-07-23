@@ -1,4 +1,5 @@
 export const BOARD_ID_SELECTOR = '#board';
+export const CONTAINER_ID_SELECTOR = '#container';
 
 export const COLS = 10;
 export const ROWS = 20;

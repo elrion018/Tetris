@@ -6,11 +6,12 @@ import {
   LEVEL,
   BLOCK_SIZE,
   LINES_PER_LEVEL,
+  BOARD_ID_SELECTOR,
 } from './constants';
 import { Piece } from './piece';
 
 interface Props {
-  context: CanvasRenderingContext2D;
+  target: HTMLElement;
 }
 
 export class Board {
@@ -18,8 +19,8 @@ export class Board {
   grid;
   piece;
 
-  constructor({ context }: Props) {
-    this.context = context;
+  constructor({ target }: Props) {
+    this.context = this.getContext(target, BOARD_ID_SELECTOR);
     this.grid = this.getGrid();
     this.piece = this.getPiece();
 
@@ -34,15 +35,29 @@ export class Board {
   }
 
   setBoardSize() {
+    if (!this.context) return;
+
     this.context.canvas.width = COLS * BLOCK_SIZE;
     this.context.canvas.height = ROWS * BLOCK_SIZE;
   }
 
   setBoardScale() {
+    if (!this.context) return;
+
     this.context.scale(BLOCK_SIZE, BLOCK_SIZE);
   }
 
+  getContext(target: HTMLElement, selector: string) {
+    const canvas = document.querySelector<HTMLCanvasElement>(selector);
+
+    if (canvas === null) return null;
+
+    return canvas.getContext('2d');
+  }
+
   cleanBoard() {
+    if (!this.context) return;
+
     const { width, height } = this.context.canvas;
 
     this.context.clearRect(0, 0, width, height);

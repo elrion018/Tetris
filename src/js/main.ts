@@ -8,6 +8,7 @@ import {
   POINTS,
   LEVEL,
   BOARD_ID_SELECTOR,
+  CONTAINER_ID_SELECTOR,
 } from './constants';
 import '../css/styles.css';
 
@@ -20,9 +21,9 @@ const getContext = () => {
 };
 
 const play = () => {
-  const context = getContext();
+  const target = document.querySelector<HTMLDivElement>(CONTAINER_ID_SELECTOR);
 
-  if (context !== null) new Game({ context });
+  if (target !== null) new Game({ target });
 
   animate();
 };

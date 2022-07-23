@@ -25,12 +25,13 @@ export class User {
     this.userInfo = newUserInfo;
   }
 
-  updateUserInfo(newUserInfo: UserInfo) {
-    if (this.newUserInfoIsSameWithUserInfo(newUserInfo))
+  updateUserInfo(newUserInfo: UserInfo | null) {
+    if (newUserInfo) {
       this.setUserInfo(newUserInfo);
-  }
 
-  newUserInfoIsSameWithUserInfo(newUserInfo: UserInfo) {
-    return JSON.stringify(this.userInfo) === JSON.stringify(newUserInfo);
+      return true;
+    }
+
+    return false;
   }
 }
