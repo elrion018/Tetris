@@ -4,6 +4,8 @@ import { Timer } from './Timer';
 import { User } from './User';
 import { View } from './View';
 
+import { TIME_FOR_DROP_BY_LEVEL } from './constants';
+
 interface Props {
   target: HTMLElement;
 }
@@ -28,6 +30,8 @@ export class Game {
   }
 
   start() {
+    this.timer.start();
+
     this.requestId = requestAnimationFrame(this.keep.bind(this));
   }
 
@@ -38,7 +42,15 @@ export class Game {
 
   keep() {
     this.board.cleanBoard();
-    this.board.dropPiece();
+
+    const elaspedTime = this.timer.getElapsedTime();
+    const { level } = this.user.getUserInfo();
+
+    if (elaspedTime >= TIME_FOR_DROP_BY_LEVEL[level]) {
+      this.board.dropPiece();
+      this.timer.updateBorderTime();
+    }
+
     this.board.drawPieces();
 
     const lines = this.board.getClearedLines();

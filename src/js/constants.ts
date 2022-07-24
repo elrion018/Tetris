@@ -9,6 +9,7 @@ export const ZERO = 0;
 export const ONE = 1;
 export const LINES_PER_LEVEL = 10;
 export const PLACEHOLDER = 0;
+export const SECOND_BY_MS = 1000;
 
 export const COLORS = [
   'cyan',
@@ -45,19 +46,21 @@ export const LINES = {
   TETRIS: 4,
 };
 
-export const LEVEL = {
-  0: 800,
-  1: 720,
-  2: 640,
-  3: 560,
-  4: 480,
-  5: 400,
-  6: 320,
-  7: 240,
-  8: 160,
-  9: 80,
-};
+export const TIME_FOR_DROP_BY_LEVEL = [
+  PLACEHOLDER,
+  800,
+  720,
+  640,
+  560,
+  480,
+  400,
+  320,
+  240,
+  160,
+  80,
+];
 
+// 시각적으로 보기좋게 하기위해 PLACEHOLDER를 넣지않음
 export const SHAPES = [
   [
     [0, 0, 0, 0],
