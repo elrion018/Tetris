@@ -19,14 +19,16 @@ interface Props {
 }
 
 export class Board {
-  context;
-  grid;
-  currentPiece;
+  context: CanvasRenderingContext2D | null;
+  currentPiece: Piece | null;
+  temporaryPiece: Piece | null;
+  grid: number[][];
 
   constructor({ target }: Props) {
     this.context = this.getContext(target, BOARD_CLASS_SELECTOR);
-    this.grid = this.getGrid();
-    this.currentPiece = this.getPiece();
+    this.grid = this.makeGrid();
+    this.currentPiece = this.makePiece();
+    this.temporaryPiece = this.makePiece();
 
     this.setBoardSize();
     this.setBoardScale();
@@ -34,8 +36,8 @@ export class Board {
   }
 
   reset() {
-    this.grid = this.getGrid();
-    this.currentPiece = this.getPiece();
+    this.grid = this.makeGrid();
+    this.currentPiece = this.makePiece();
   }
 
   setBoardSize() {
@@ -59,11 +61,18 @@ export class Board {
     return canvas.getContext('2d');
   }
 
-  getPiece() {
-    if (this.context) return new Piece({ context: this.context });
+  getCurrentPiece() {
+    return this.currentPiece;
   }
 
-  getGrid() {
+  makePiece() {
+    if (this.context)
+      return new Piece({ context: this.context, grid: this.grid });
+
+    return null;
+  }
+
+  makeGrid() {
     return Array.from({ length: ROWS }, () =>
       Array.from({ length: COLS }).map(() => PLACEHOLDER)
     );
@@ -124,61 +133,15 @@ export class Board {
     this.context.fillText(GAME_OVER_TEXT, 1.8, 4);
   }
 
-  dropPiece() {
-    if (!this.currentPiece) return;
-
-    if (this.checkCanPieceDrop()) {
-      this.currentPiece.drop();
-
-      return;
-    }
-
-    this.fillShapeToGrid();
+  movePiece(changeX: number, changeY: number) {
+    this.currentPiece?.move(changeX, changeY);
   }
 
-  fillShapeToGrid() {
-    if (!this.currentPiece) return;
-
-    const shape = this.currentPiece.getShape();
-    const { xPosition, yPosition } = this.currentPiece.getPositions();
-
-    shape.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value > 0) this.grid[y + yPosition][x + xPosition] = value;
-      });
-    });
+  rotatePiece() {
+    this.currentPiece?.rotate();
   }
 
   checkPlaceHolder(placeholder: number) {
     return placeholder === PLACEHOLDER;
-  }
-
-  checkPositionsInsideEdge(xPosition: number, yPosition: number) {
-    return xPosition >= ZERO && xPosition < COLS && yPosition < ROWS;
-  }
-
-  checkNotQccupiedPositions(xPosition: number, yPosition: number) {
-    return this.grid[yPosition][xPosition] === PLACEHOLDER;
-  }
-
-  checkCanPieceDrop() {
-    if (!this.currentPiece) return;
-
-    const shape = this.currentPiece.getShape();
-    const { xPosition, yPosition } = this.currentPiece;
-
-    return shape.every((row, shapeY) => {
-      return row.every((value, shapeX) => {
-        if (this.checkPlaceHolder(value)) return true;
-
-        const dropedXposition = xPosition + shapeX;
-        const dropedYposition = yPosition + shapeY + ONE;
-
-        return (
-          this.checkPositionsInsideEdge(dropedXposition, dropedYposition) &&
-          this.checkNotQccupiedPositions(dropedXposition, dropedYposition)
-        );
-      });
-    });
   }
 }

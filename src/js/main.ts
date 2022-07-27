@@ -4,7 +4,7 @@ import { Board } from './Board';
 import {
   CONTAINER_CLASS_SELECTOR,
   BUTTON_CLASS_SELECTOR,
-  CLICK_EVENT,
+  EVENT,
 } from './constants';
 import '../css/styles.css';
 
@@ -18,7 +18,7 @@ const play = () => {
 
 const button = document.querySelector<HTMLButtonElement>(BUTTON_CLASS_SELECTOR);
 
-if (button) button.addEventListener(CLICK_EVENT, play);
+if (button) button.addEventListener(EVENT.CLICK, play);
 
 // keys
 // const moves = {

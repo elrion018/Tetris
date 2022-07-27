@@ -2,9 +2,9 @@ import { Board } from './Board';
 import { Calculator } from './Calculator';
 import { Timer } from './Timer';
 import { User } from './User';
-import { View } from './View';
+import { UserInterface } from './UserInterface';
 
-import { TIME_FOR_DROP_BY_LEVEL } from './constants';
+import { ONE, TIME_FOR_DROP_BY_LEVEL, ZERO } from './constants';
 
 interface Props {
   target: HTMLElement;
@@ -14,7 +14,7 @@ export class Game {
   user: User;
   board: Board;
   calculator: Calculator;
-  view: View;
+  useInterface: UserInterface;
   timer: Timer;
   requestId: number;
 
@@ -22,7 +22,7 @@ export class Game {
     this.user = new User();
     this.board = new Board({ target });
     this.calculator = new Calculator({ user: this.user });
-    this.view = new View({ target });
+    this.useInterface = new UserInterface({ target, board: this.board });
     this.timer = new Timer();
     this.requestId = 0;
 
@@ -31,6 +31,7 @@ export class Game {
 
   start() {
     this.timer.start();
+    this.useInterface.attachKeyboardEvent();
 
     this.requestId = requestAnimationFrame(this.keep.bind(this));
   }
@@ -47,7 +48,7 @@ export class Game {
     const { level } = this.user.getUserInfo();
 
     if (elaspedTime >= TIME_FOR_DROP_BY_LEVEL[level]) {
-      this.board.dropPiece();
+      this.board.movePiece(ZERO, ONE);
       this.timer.updateBorderTime();
     }
 
@@ -58,7 +59,7 @@ export class Game {
       this.calculator.getCalculatedUserInfoWithLines(lines);
 
     if (this.user.updateUserInfo(calculatedUserInfo))
-      this.view.render(this.user.getUserInfo());
+      this.useInterface.render(this.user.getUserInfo());
 
     this.requestId = requestAnimationFrame(this.keep.bind(this));
   }

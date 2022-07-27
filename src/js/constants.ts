@@ -26,6 +26,10 @@ export const GAME_OVER_TEXT_FONT = '1px Arial';
 export const GAME_OVER_TEXT_COLOR = 'red';
 export const GAME_OVER_TEXT = 'GAME OVER';
 
+export const EVENT = {
+  CLICK: 'click',
+  KEYDOWN: 'keydown',
+};
 export const CLICK_EVENT = 'click';
 
 export const POINTS = {
