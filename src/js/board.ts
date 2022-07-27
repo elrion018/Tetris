@@ -61,10 +61,6 @@ export class Board {
     return canvas.getContext('2d');
   }
 
-  getCurrentPiece() {
-    return this.currentPiece;
-  }
-
   makePiece() {
     if (this.context)
       return new Piece({ context: this.context, grid: this.grid });
@@ -139,9 +135,5 @@ export class Board {
 
   rotatePiece() {
     this.currentPiece?.rotate();
-  }
-
-  checkPlaceHolder(placeholder: number) {
-    return placeholder === PLACEHOLDER;
   }
 }

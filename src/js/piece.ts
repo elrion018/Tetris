@@ -1,3 +1,5 @@
+import { Checker } from './Checker';
+
 import { COLORS, COLS, PLACEHOLDER, ROWS, SHAPES, ZERO } from './constants';
 
 interface Props {
@@ -29,21 +31,6 @@ export class Piece {
     return Math.floor(Math.random() * types);
   }
 
-  getShape() {
-    return [...this.shape];
-  }
-
-  getPositions() {
-    const { xPosition, yPosition } = this;
-
-    return { xPosition, yPosition };
-  }
-
-  setPositions(newXposition: number, newYposition: number) {
-    this.xPosition = newXposition;
-    this.yPosition = newYposition;
-  }
-
   draw() {
     this.context.fillStyle = this.color;
     this.shape.forEach((row, y) => {
@@ -68,9 +55,20 @@ export class Piece {
     newShape.forEach((row) => row.reverse());
 
     if (
-      this.checkInsideHorizontalEdge(newShape, this.xPosition) &&
-      this.checkInsideVerticalEdge(newShape, this.yPosition) &&
-      this.checkNotQccupiedPositions(newShape, this.xPosition, this.yPosition)
+      Checker.checkInsideHorizontalEdge({
+        shape: newShape,
+        xPosition: this.xPosition,
+      }) &&
+      Checker.checkInsideVerticalEdge({
+        shape: newShape,
+        yPosition: this.yPosition,
+      }) &&
+      Checker.checkNotQccupiedPositions({
+        grid: this.grid,
+        shape: newShape,
+        xPosition: this.xPosition,
+        yPosition: this.yPosition,
+      })
     ) {
       this.shape = structuredClone(newShape);
 
@@ -78,66 +76,33 @@ export class Piece {
     }
   }
 
-  checkPlaceHolder(placeholder: number) {
-    return placeholder === PLACEHOLDER;
-  }
-
-  checkInsideHorizontalEdge(shape: number[][], xPosition: number) {
-    return shape.every((row, shapeY) => {
-      return row.every((value, shapeX) => {
-        if (this.checkPlaceHolder(value)) return true;
-
-        const shapeXposition = xPosition + shapeX;
-
-        return shapeXposition >= ZERO && shapeXposition < COLS;
-      });
-    });
-  }
-
-  checkInsideVerticalEdge(shape: number[][], yPosition: number) {
-    return shape.every((row, shapeY) => {
-      return row.every((value, shapeX) => {
-        if (this.checkPlaceHolder(value)) return true;
-
-        const shapeYposition = yPosition + shapeY;
-
-        return shapeYposition >= ZERO && shapeYposition < ROWS;
-      });
-    });
-  }
-
-  checkNotQccupiedPositions(
-    shape: number[][],
-    xPosition: number,
-    yPosition: number
-  ) {
-    return shape.every((row, shapeY) => {
-      return row.every((value, shapeX) => {
-        if (this.checkPlaceHolder(value)) return true;
-
-        const shapeXposition = xPosition + shapeX;
-        const shapeYposition = yPosition + shapeY;
-
-        return this.grid[shapeYposition][shapeXposition] === PLACEHOLDER;
-      });
-    });
-  }
-
   move(changeX: number, changeY: number) {
     const changedXposition = this.xPosition + changeX;
     const changedYposition = this.yPosition + changeY;
 
-    if (!this.checkInsideHorizontalEdge(this.shape, changedXposition)) return;
+    if (
+      !Checker.checkInsideHorizontalEdge({
+        shape: this.shape,
+        xPosition: changedXposition,
+      })
+    )
+      return;
 
-    if (!this.checkInsideVerticalEdge(this.shape, changedYposition))
+    if (
+      !Checker.checkInsideVerticalEdge({
+        shape: this.shape,
+        yPosition: changedYposition,
+      })
+    )
       return this.fillShapeToGrid();
 
     if (
-      this.checkNotQccupiedPositions(
-        this.shape,
-        changedXposition,
-        changedYposition
-      )
+      Checker.checkNotQccupiedPositions({
+        grid: this.grid,
+        shape: this.shape,
+        xPosition: changedXposition,
+        yPosition: changedYposition,
+      })
     ) {
       this.xPosition = changedXposition;
       this.yPosition = changedYposition;

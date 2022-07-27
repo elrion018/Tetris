@@ -1,9 +1,8 @@
 import { UserInfo } from './User';
-import { Piece } from './Piece';
 import { EVENT, ONE, ZERO } from './constants';
 import { Board } from './board';
 
-type DirectionKeyHandler = (piece: Piece, board: Board) => void;
+type DirectionKeyHandler = (board: Board) => void;
 
 interface DirectionKeyHandlers {
   ArrowLeft: DirectionKeyHandler;
@@ -26,19 +25,19 @@ export class UserInterface {
     this.target = target;
     this.board = board;
     this.directionKeyHandlers = {
-      ArrowLeft: (piece: Piece, board: Board) => {
+      ArrowLeft: (board: Board) => {
         board.movePiece(-ONE, ZERO);
       },
 
-      ArrowRight: (piece: Piece, board: Board) => {
+      ArrowRight: (board: Board) => {
         board.movePiece(ONE, ZERO);
       },
 
-      ArrowUp: (piece: Piece, board: Board) => {
+      ArrowUp: (board: Board) => {
         board.rotatePiece();
       },
 
-      ArrowDown: (piece: Piece, board: Board) => {
+      ArrowDown: (board: Board) => {
         board.movePiece(ZERO, ONE);
       },
     };
@@ -62,11 +61,8 @@ export class UserInterface {
         this.directionKeyHandlers[
           code as keyof typeof this.directionKeyHandlers
         ];
-      const currentPiece = this.board.getCurrentPiece();
 
-      if (!pressedKey) return;
-
-      if (currentPiece) pressedKey(currentPiece, this.board);
+      if (pressedKey) pressedKey(this.board);
     });
   }
 }
