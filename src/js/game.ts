@@ -4,7 +4,13 @@ import { Timer } from './Timer';
 import { User } from './User';
 import { UserInterface } from './UserInterface';
 
-import { ONE, SCORES, TIME_FOR_MOVE_DOWN_BY_LEVEL, ZERO } from './constants';
+import {
+  MAX_LEVEL,
+  ONE,
+  SCORES,
+  TIME_FOR_MOVE_DOWN_BY_LEVEL,
+  ZERO,
+} from './constants';
 
 const { SCORE_FOR_LEVEL_UP } = SCORES;
 
@@ -58,7 +64,10 @@ export class Game {
     const elaspedTime = this.timer.getElapsedTime();
     const { level } = this.user.getUserInfo();
 
-    if (elaspedTime >= TIME_FOR_MOVE_DOWN_BY_LEVEL[level]) {
+    if (
+      elaspedTime >=
+      TIME_FOR_MOVE_DOWN_BY_LEVEL[level > MAX_LEVEL ? MAX_LEVEL : level]
+    ) {
       this.board.movePiece(ZERO, ONE);
       this.timer.updateBorderTime();
     }
@@ -71,17 +80,15 @@ export class Game {
 
     this.user.addLines(lines);
 
-    const { score, level } = this.user.getUserInfo();
+    const { score } = this.user.getUserInfo();
 
-    this.user.addScore(
-      this.calculator.getCalculatedScore({ score, lines, level })
-    );
+    this.user.addScore(this.calculator.getCalculatedScore({ score, lines }));
   }
 
   levelUp() {
-    const { score } = this.user.getUserInfo();
+    const { score, level } = this.user.getUserInfo();
 
-    if (score >= SCORE_FOR_LEVEL_UP) this.user.levelUp();
+    if (score >= SCORE_FOR_LEVEL_UP * level) this.user.levelUp();
   }
 
   over() {

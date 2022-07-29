@@ -3,29 +3,28 @@ import { Checker } from './Checker';
 
 interface GetCalculatedScoreParams {
   score: number;
-  level: number;
   lines: number;
 }
 
 export class Calculator {
-  getCalculatedScore({ score, level, lines }: GetCalculatedScoreParams) {
+  getCalculatedScore({ score, lines }: GetCalculatedScoreParams) {
     const { SINGLE, DOUBLE, TRIPLE, TETRIS, UPPER_TETRIS } = SCORES;
 
     switch (lines) {
       case LINES.SINGLE:
-        return score + SINGLE * level;
+        return score + SINGLE;
 
       case LINES.DOUBLE:
-        return score + DOUBLE * level;
+        return score + DOUBLE;
 
       case LINES.TRIPLE:
-        return score + TRIPLE * level;
+        return score + TRIPLE;
 
       case LINES.TETRIS:
-        return score + TETRIS * level;
+        return score + TETRIS;
 
       default:
-        return score + UPPER_TETRIS * level;
+        return score + UPPER_TETRIS;
     }
   }
 

@@ -1,4 +1,4 @@
-import { SECOND_BY_MS } from './constants';
+import { ONE_HUNDRED_MS } from './constants';
 
 export class Timer {
   borderTime: number;
@@ -30,11 +30,11 @@ export class Timer {
   tick() {
     return setTimeout(
       (() => {
-        this.progress += SECOND_BY_MS;
+        this.progress += ONE_HUNDRED_MS;
 
         this.timerId = this.tick();
       }).bind(this),
-      SECOND_BY_MS
+      ONE_HUNDRED_MS
     );
   }
 

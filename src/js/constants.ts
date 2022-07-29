@@ -9,7 +9,7 @@ export const ZERO = 0;
 export const ONE = 1;
 export const LINES_PER_LEVEL = 10;
 export const PLACEHOLDER = 0;
-export const SECOND_BY_MS = 1000;
+export const ONE_HUNDRED_MS = 100;
 
 export const COLORS = [
   'cyan',
@@ -47,7 +47,7 @@ export const SCORES = {
   SOFT_DROP: 10,
   HARD_DROP: 30,
 
-  SCORE_FOR_LEVEL_UP: 5000,
+  SCORE_FOR_LEVEL_UP: 1000,
 };
 
 export const LINES = {
@@ -68,8 +68,10 @@ export const TIME_FOR_MOVE_DOWN_BY_LEVEL = [
   320,
   240,
   160,
-  80,
+  100,
 ];
+
+export const MAX_LEVEL = 10;
 
 // 시각적으로 보기좋게 하기위해 PLACEHOLDER를 넣지않음
 export const SHAPES = [
