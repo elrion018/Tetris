@@ -12,21 +12,29 @@ import {
   GAME_OVER_TEXT_COLOR,
   GAME_OVER_TEXT,
   PIECE_STATUS,
+  POINTS,
 } from './constants';
 import { Piece } from './Piece';
+import { User } from './User';
+
+const { STOP } = PIECE_STATUS;
+const { HARD_DROP, SOFT_DROP } = POINTS;
 
 interface Props {
   target: HTMLElement;
+  user: User;
 }
 
 export class Board {
   context: CanvasRenderingContext2D | null;
+  user: User;
   currentPiece: Piece | null;
   prevPiece: Piece | null;
   grid: number[][];
 
-  constructor({ target }: Props) {
+  constructor({ target, user }: Props) {
     this.context = this.getContext(target, BOARD_CLASS_SELECTOR);
+    this.user = user;
     this.grid = this.makeGrid();
     this.currentPiece = this.makePiece();
     this.prevPiece = null;
@@ -133,14 +141,31 @@ export class Board {
   movePiece(changeX: number, changeY: number) {
     if (!this.currentPiece) return;
 
-    this.currentPiece.move(changeX, changeY);
-
-    if (this.currentPiece.getStatus() === PIECE_STATUS.STOP) {
+    if (this.currentPiece?.getStatus() === STOP) {
       this.prevPiece = this.currentPiece;
       this.currentPiece = this.makePiece();
 
       this.prevPiece.fillShapeToGrid();
+      this.user.addScore(SOFT_DROP);
+
+      return;
     }
+
+    this.currentPiece.move(changeX, changeY);
+  }
+
+  dropPiece() {
+    if (!this.currentPiece) return;
+
+    while (this.currentPiece?.getStatus() !== STOP) {
+      this.currentPiece?.move(ZERO, ONE);
+    }
+
+    this.prevPiece = this.currentPiece;
+    this.currentPiece = this.makePiece();
+
+    this.prevPiece.fillShapeToGrid();
+    this.user.addScore(HARD_DROP);
   }
 
   rotatePiece() {

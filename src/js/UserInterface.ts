@@ -9,6 +9,7 @@ interface DirectionKeyHandlers {
   ArrowRight: DirectionKeyHandler;
   ArrowUp: DirectionKeyHandler;
   ArrowDown: DirectionKeyHandler;
+  Space: DirectionKeyHandler;
 }
 
 interface Props {
@@ -40,6 +41,10 @@ export class UserInterface {
       ArrowDown: (board: Board) => {
         board.movePiece(ZERO, ONE);
       },
+
+      Space: (board: Board) => {
+        board.dropPiece();
+      },
     };
   }
 
@@ -52,7 +57,9 @@ export class UserInterface {
   }
 
   attachKeyboardEvent() {
-    document.addEventListener(EVENT.KEYDOWN, (event: KeyboardEventInit) => {
+    document.addEventListener(EVENT.KEYDOWN, (event: any) => {
+      event.preventDefault();
+
       const { code } = event;
 
       if (!code) return;

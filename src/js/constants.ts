@@ -44,8 +44,8 @@ export const POINTS = {
   TETRIS: 800,
   UPPER_TETRIS: 1600,
 
-  SOFT_DROP: 1,
-  HADR_DROP: 2,
+  SOFT_DROP: 10,
+  HARD_DROP: 30,
 };
 
 export const LINES = {

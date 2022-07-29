@@ -1,4 +1,4 @@
-import { COLS, PLACEHOLDER, ROWS, ZERO } from './constants';
+import { COLS, LINES_PER_LEVEL, PLACEHOLDER, ROWS, ZERO } from './constants';
 
 interface CheckPlaceHolderParams {
   value: number;
@@ -72,5 +72,9 @@ export class Checker {
         return grid[shapeYposition][shapeXposition] === PLACEHOLDER;
       });
     });
+  }
+
+  static checkLinesUpperLinesPerLevel(lines: number) {
+    return lines >= LINES_PER_LEVEL;
   }
 }

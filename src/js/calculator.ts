@@ -1,6 +1,7 @@
 import { User, UserInfo } from './User';
 
-import { LINES_PER_LEVEL, LINES, POINTS, ZERO } from './constants';
+import { LINES, POINTS, ZERO } from './constants';
+import { Checker } from './Checker';
 
 interface Props {
   user: User;
@@ -13,7 +14,7 @@ export class Calculator {
     this.user = user;
   }
 
-  getCalculatedUserInfoWithLines(lines: number): UserInfo | null {
+  getCalculatedUserInfoWithLines(lines: number): UserInfo {
     const userInfo = this.user.getUserInfo();
     const { level, score } = userInfo;
 
@@ -28,7 +29,11 @@ export class Calculator {
       };
     }
 
-    return null;
+    return {
+      score,
+      lines,
+      level,
+    };
   }
 
   getCalculatedScore(score: number, lines: number, level: number) {
@@ -51,12 +56,8 @@ export class Calculator {
   }
 
   getRaisedLevel(lines: number, level: number) {
-    if (this.checkLinesUpperLinesPerLevel(lines)) return level + 1;
+    if (Checker.checkLinesUpperLinesPerLevel(lines)) return level + 1;
 
     return level;
-  }
-
-  checkLinesUpperLinesPerLevel(lines: number) {
-    return lines >= LINES_PER_LEVEL;
   }
 }

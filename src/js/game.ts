@@ -20,7 +20,7 @@ export class Game {
 
   constructor({ target }: Props) {
     this.user = new User();
-    this.board = new Board({ target });
+    this.board = new Board({ target, user: this.user });
     this.calculator = new Calculator({ user: this.user });
     this.useInterface = new UserInterface({ target, board: this.board });
     this.timer = new Timer();
@@ -58,8 +58,8 @@ export class Game {
     const calculatedUserInfo =
       this.calculator.getCalculatedUserInfoWithLines(lines);
 
-    if (this.user.updateUserInfo(calculatedUserInfo))
-      this.useInterface.render(this.user.getUserInfo());
+    this.user.setUserInfo(calculatedUserInfo);
+    this.useInterface.render(this.user.getUserInfo());
 
     this.requestId = requestAnimationFrame(this.keep.bind(this));
   }

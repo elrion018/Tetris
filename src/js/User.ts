@@ -25,13 +25,7 @@ export class User {
     this.userInfo = newUserInfo;
   }
 
-  updateUserInfo(newUserInfo: UserInfo | null) {
-    if (newUserInfo) {
-      this.setUserInfo(newUserInfo);
-
-      return true;
-    }
-
-    return false;
+  addScore(score: number) {
+    this.userInfo.score += score;
   }
 }
