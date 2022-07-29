@@ -4,7 +4,9 @@ import { Timer } from './Timer';
 import { User } from './User';
 import { UserInterface } from './UserInterface';
 
-import { ONE, PIECE_STATUS, TIME_FOR_DROP_BY_LEVEL, ZERO } from './constants';
+import { ONE, SCORES, TIME_FOR_MOVE_DOWN_BY_LEVEL, ZERO } from './constants';
+
+const { SCORE_FOR_LEVEL_UP } = SCORES;
 
 interface Props {
   target: HTMLElement;
@@ -21,7 +23,7 @@ export class Game {
   constructor({ target }: Props) {
     this.user = new User();
     this.board = new Board({ target, user: this.user });
-    this.calculator = new Calculator({ user: this.user });
+    this.calculator = new Calculator();
     this.useInterface = new UserInterface({ target, board: this.board });
     this.timer = new Timer();
     this.requestId = 0;
@@ -46,6 +48,7 @@ export class Game {
     this.movePiece();
     this.board.drawPieces();
     this.clearLines();
+    this.levelUp();
     this.useInterface.render(this.user.getUserInfo());
 
     this.requestId = requestAnimationFrame(this.keep.bind(this));
@@ -55,7 +58,7 @@ export class Game {
     const elaspedTime = this.timer.getElapsedTime();
     const { level } = this.user.getUserInfo();
 
-    if (elaspedTime >= TIME_FOR_DROP_BY_LEVEL[level]) {
+    if (elaspedTime >= TIME_FOR_MOVE_DOWN_BY_LEVEL[level]) {
       this.board.movePiece(ZERO, ONE);
       this.timer.updateBorderTime();
     }
@@ -64,7 +67,21 @@ export class Game {
   clearLines() {
     const lines = this.board.getClearedLines();
 
+    if (!lines) return;
+
     this.user.addLines(lines);
+
+    const { score, level } = this.user.getUserInfo();
+
+    this.user.addScore(
+      this.calculator.getCalculatedScore({ score, lines, level })
+    );
+  }
+
+  levelUp() {
+    const { score } = this.user.getUserInfo();
+
+    if (score >= SCORE_FOR_LEVEL_UP) this.user.levelUp();
   }
 
   over() {

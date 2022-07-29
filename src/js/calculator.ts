@@ -1,35 +1,31 @@
-import { User } from './User';
-
-import { LINES, POINTS, ZERO } from './constants';
+import { LINES, SCORES, ZERO } from './constants';
 import { Checker } from './Checker';
 
-interface Props {
-  user: User;
+interface GetCalculatedScoreParams {
+  score: number;
+  level: number;
+  lines: number;
 }
 
 export class Calculator {
-  user: User;
+  getCalculatedScore({ score, level, lines }: GetCalculatedScoreParams) {
+    const { SINGLE, DOUBLE, TRIPLE, TETRIS, UPPER_TETRIS } = SCORES;
 
-  constructor({ user }: Props) {
-    this.user = user;
-  }
-
-  getCalculatedScore(score: number, lines: number, level: number) {
     switch (lines) {
       case LINES.SINGLE:
-        return score + POINTS.SINGLE * level;
+        return score + SINGLE * level;
 
       case LINES.DOUBLE:
-        return score + POINTS.DOUBLE * level;
+        return score + DOUBLE * level;
 
       case LINES.TRIPLE:
-        return score + POINTS.TRIPLE * level;
+        return score + TRIPLE * level;
 
       case LINES.TETRIS:
-        return score + POINTS.TETRIS * level;
+        return score + TETRIS * level;
 
       default:
-        return score + POINTS.UPPER_TETRIS * level;
+        return score + UPPER_TETRIS * level;
     }
   }
 

@@ -26,4 +26,8 @@ export class User {
   addLines(lines: number) {
     this.lines += lines;
   }
+
+  levelUp() {
+    this.level++;
+  }
 }

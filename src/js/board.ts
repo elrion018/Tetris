@@ -12,13 +12,13 @@ import {
   GAME_OVER_TEXT_COLOR,
   GAME_OVER_TEXT,
   PIECE_STATUS,
-  POINTS,
+  SCORES,
 } from './constants';
 import { Piece } from './Piece';
 import { User } from './User';
 
 const { STOP } = PIECE_STATUS;
-const { HARD_DROP, SOFT_DROP } = POINTS;
+const { HARD_DROP, SOFT_DROP } = SCORES;
 
 interface Props {
   target: HTMLElement;

@@ -37,7 +37,7 @@ export const PIECE_STATUS = {
   MOVE: 'move',
 };
 
-export const POINTS = {
+export const SCORES = {
   SINGLE: 100,
   DOUBLE: 300,
   TRIPLE: 500,
@@ -46,6 +46,8 @@ export const POINTS = {
 
   SOFT_DROP: 10,
   HARD_DROP: 30,
+
+  SCORE_FOR_LEVEL_UP: 5000,
 };
 
 export const LINES = {
@@ -55,7 +57,7 @@ export const LINES = {
   TETRIS: 4,
 };
 
-export const TIME_FOR_DROP_BY_LEVEL = [
+export const TIME_FOR_MOVE_DOWN_BY_LEVEL = [
   PLACEHOLDER,
   800,
   720,
