@@ -63,10 +63,8 @@ export class Game {
 
   clearLines() {
     const lines = this.board.getClearedLines();
-    const calculatedUserInfo =
-      this.calculator.getCalculatedUserInfoWithLines(lines);
 
-    this.user.setUserInfo(calculatedUserInfo);
+    this.user.addLines(lines);
   }
 
   over() {

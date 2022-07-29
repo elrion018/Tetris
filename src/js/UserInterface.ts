@@ -1,4 +1,3 @@
-import { UserInfo } from './User';
 import { EVENT, ONE, ZERO } from './constants';
 import { Board } from './board';
 
@@ -10,6 +9,12 @@ interface DirectionKeyHandlers {
   ArrowUp: DirectionKeyHandler;
   ArrowDown: DirectionKeyHandler;
   Space: DirectionKeyHandler;
+}
+
+interface RenderParams {
+  score: number;
+  lines: number;
+  level: number;
 }
 
 interface Props {
@@ -48,11 +53,11 @@ export class UserInterface {
     };
   }
 
-  render(userInfo: UserInfo) {
-    Object.entries(userInfo).forEach(([key, value]) => {
+  render({ score, lines, level }: RenderParams) {
+    Object.entries({ score, lines, level }).forEach(([key, value]) => {
       const element = this.target.querySelector(`#${key}`);
 
-      if (element) element.textContent = value;
+      if (element) element.textContent = value.toString();
     });
   }
 

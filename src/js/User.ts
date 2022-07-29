@@ -1,31 +1,29 @@
-export interface UserInfo {
+export class User {
   score: number;
   lines: number;
   level: number;
-}
-
-const initialUserInfo = { score: 0, lines: 0, level: 1 };
-
-export class User {
-  userInfo: UserInfo;
 
   constructor() {
-    this.userInfo = initialUserInfo;
+    this.score = 0;
+    this.lines = 0;
+    this.level = 1;
   }
 
   reset() {
-    this.userInfo = initialUserInfo;
+    this.score = 0;
+    this.lines = 0;
+    this.level = 1;
   }
 
   getUserInfo() {
-    return { ...this.userInfo };
-  }
-
-  setUserInfo(newUserInfo: UserInfo) {
-    this.userInfo = newUserInfo;
+    return { score: this.score, lines: this.lines, level: this.level };
   }
 
   addScore(score: number) {
-    this.userInfo.score += score;
+    this.score += score;
+  }
+
+  addLines(lines: number) {
+    this.lines += lines;
   }
 }
