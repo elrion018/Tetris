@@ -43,15 +43,7 @@ export class Game {
 
   keep() {
     this.board.cleanBoard();
-
-    const elaspedTime = this.timer.getElapsedTime();
-    const { level } = this.user.getUserInfo();
-
-    if (elaspedTime >= TIME_FOR_DROP_BY_LEVEL[level]) {
-      this.board.movePiece(ZERO, ONE);
-      this.timer.updateBorderTime();
-    }
-
+    this.movePiece();
     this.board.drawPieces();
 
     const lines = this.board.getClearedLines();
@@ -62,6 +54,16 @@ export class Game {
     this.useInterface.render(this.user.getUserInfo());
 
     this.requestId = requestAnimationFrame(this.keep.bind(this));
+  }
+
+  movePiece() {
+    const elaspedTime = this.timer.getElapsedTime();
+    const { level } = this.user.getUserInfo();
+
+    if (elaspedTime >= TIME_FOR_DROP_BY_LEVEL[level]) {
+      this.board.movePiece(ZERO, ONE);
+      this.timer.updateBorderTime();
+    }
   }
 
   over() {
