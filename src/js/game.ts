@@ -4,7 +4,7 @@ import { Timer } from './Timer';
 import { User } from './User';
 import { UserInterface } from './UserInterface';
 
-import { ONE, TIME_FOR_DROP_BY_LEVEL, ZERO } from './constants';
+import { ONE, PIECE_STATUS, TIME_FOR_DROP_BY_LEVEL, ZERO } from './constants';
 
 interface Props {
   target: HTMLElement;

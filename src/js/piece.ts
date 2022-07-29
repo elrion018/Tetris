@@ -1,6 +1,10 @@
 import { Checker } from './Checker';
 
-import { COLORS, COLS, PLACEHOLDER, ROWS, SHAPES, ZERO } from './constants';
+import { COLORS, PIECE_STATUS, SHAPES } from './constants';
+
+const { COLLISION, STOP, MOVE } = PIECE_STATUS;
+
+type Status = typeof COLLISION | typeof STOP | typeof MOVE;
 
 interface Props {
   context: CanvasRenderingContext2D;
@@ -14,6 +18,7 @@ export class Piece {
   color: string;
   shape: number[][];
   grid: number[][];
+  status: Status;
 
   constructor({ context, grid }: Props) {
     this.context = context;
@@ -22,13 +27,22 @@ export class Piece {
 
     const typeId = this.randomizePieceType(COLORS.length);
 
+    this.color = COLORS[typeId];
     this.shape = SHAPES[typeId];
     this.grid = grid;
-    this.color = COLORS[typeId];
+    this.status = MOVE;
   }
 
   randomizePieceType(types: number) {
     return Math.floor(Math.random() * types);
+  }
+
+  getPositions() {
+    return { xPosition: this.xPosition, yPosition: this.yPosition };
+  }
+
+  getStatus() {
+    return this.status;
   }
 
   draw() {
@@ -85,32 +99,38 @@ export class Piece {
         shape: this.shape,
         xPosition: changedXposition,
       })
-    )
+    ) {
+      this.status = COLLISION;
+
       return;
+    }
 
     if (
       !Checker.checkInsideVerticalEdge({
         shape: this.shape,
         yPosition: changedYposition,
       })
-    )
-      return this.fillShapeToGrid();
+    ) {
+      this.status = STOP;
+
+      return;
+    }
 
     if (
-      Checker.checkNotQccupiedPositions({
+      !Checker.checkNotQccupiedPositions({
         grid: this.grid,
         shape: this.shape,
         xPosition: changedXposition,
         yPosition: changedYposition,
       })
     ) {
-      this.xPosition = changedXposition;
-      this.yPosition = changedYposition;
+      this.status = STOP;
 
       return;
     }
 
-    this.fillShapeToGrid();
+    this.xPosition = changedXposition;
+    this.yPosition = changedYposition;
   }
 
   fillShapeToGrid() {

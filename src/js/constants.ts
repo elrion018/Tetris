@@ -30,7 +30,12 @@ export const EVENT = {
   CLICK: 'click',
   KEYDOWN: 'keydown',
 };
-export const CLICK_EVENT = 'click';
+
+export const PIECE_STATUS = {
+  COLLISION: 'collision',
+  STOP: 'stop',
+  MOVE: 'move',
+};
 
 export const POINTS = {
   SINGLE: 100,

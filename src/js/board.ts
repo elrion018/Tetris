@@ -11,6 +11,7 @@ import {
   GAME_OVER_TEXT_FONT,
   GAME_OVER_TEXT_COLOR,
   GAME_OVER_TEXT,
+  PIECE_STATUS,
 } from './constants';
 import { Piece } from './Piece';
 
@@ -21,14 +22,14 @@ interface Props {
 export class Board {
   context: CanvasRenderingContext2D | null;
   currentPiece: Piece | null;
-  temporaryPiece: Piece | null;
+  prevPiece: Piece | null;
   grid: number[][];
 
   constructor({ target }: Props) {
     this.context = this.getContext(target, BOARD_CLASS_SELECTOR);
     this.grid = this.makeGrid();
     this.currentPiece = this.makePiece();
-    this.temporaryPiece = this.makePiece();
+    this.prevPiece = null;
 
     this.setBoardSize();
     this.setBoardScale();
@@ -130,7 +131,16 @@ export class Board {
   }
 
   movePiece(changeX: number, changeY: number) {
-    this.currentPiece?.move(changeX, changeY);
+    if (!this.currentPiece) return;
+
+    this.currentPiece.move(changeX, changeY);
+
+    if (this.currentPiece.getStatus() === PIECE_STATUS.STOP) {
+      this.prevPiece = this.currentPiece;
+      this.currentPiece = this.makePiece();
+
+      this.prevPiece.fillShapeToGrid();
+    }
   }
 
   rotatePiece() {
