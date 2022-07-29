@@ -45,12 +45,7 @@ export class Game {
     this.board.cleanBoard();
     this.movePiece();
     this.board.drawPieces();
-
-    const lines = this.board.getClearedLines();
-    const calculatedUserInfo =
-      this.calculator.getCalculatedUserInfoWithLines(lines);
-
-    this.user.setUserInfo(calculatedUserInfo);
+    this.clearLines();
     this.useInterface.render(this.user.getUserInfo());
 
     this.requestId = requestAnimationFrame(this.keep.bind(this));
@@ -64,6 +59,14 @@ export class Game {
       this.board.movePiece(ZERO, ONE);
       this.timer.updateBorderTime();
     }
+  }
+
+  clearLines() {
+    const lines = this.board.getClearedLines();
+    const calculatedUserInfo =
+      this.calculator.getCalculatedUserInfoWithLines(lines);
+
+    this.user.setUserInfo(calculatedUserInfo);
   }
 
   over() {
