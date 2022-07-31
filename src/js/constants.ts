@@ -7,7 +7,6 @@ export const ROWS = 20;
 export const BLOCK_SIZE = 30;
 export const ZERO = 0;
 export const ONE = 1;
-export const LINES_PER_LEVEL = 10;
 export const PLACEHOLDER = 0;
 export const ONE_HUNDRED_MS = 100;
 

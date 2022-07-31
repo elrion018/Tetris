@@ -70,6 +70,14 @@ export class Board {
     return canvas.getContext('2d');
   }
 
+  getCurrentPiece() {
+    return this.currentPiece;
+  }
+
+  getGrid() {
+    return [...this.grid];
+  }
+
   makePiece() {
     if (this.context)
       return new Piece({ context: this.context, grid: this.grid });
@@ -109,16 +117,16 @@ export class Board {
     this.context.clearRect(ZERO, ZERO, width, height);
   }
 
-  drawPieces() {
-    if (!this.context || !this.currentPiece) return;
-
-    this.currentPiece.draw();
-
+  drawStackedPiece() {
     this.grid.forEach((row, yPosition) => {
       row.forEach((value, xPosition) => {
         this.drawPiece(value, xPosition, yPosition);
       });
     });
+  }
+
+  drawCurrentPiece() {
+    this.currentPiece?.draw();
   }
 
   drawPiece(value: number, xPosition: number, yPosition: number) {

@@ -1,5 +1,4 @@
-import { LINES, SCORES, ZERO } from './constants';
-import { Checker } from './Checker';
+import { LINES, SCORES } from './constants';
 
 interface CalculateScoreByLineParams {
   lines: number;

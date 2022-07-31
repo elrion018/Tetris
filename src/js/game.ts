@@ -11,6 +11,7 @@ import {
   TIME_FOR_MOVE_DOWN_BY_LEVEL,
   ZERO,
 } from './constants';
+import { Checker } from './Checker';
 
 const { SCORE_FOR_LEVEL_UP } = SCORES;
 
@@ -50,7 +51,11 @@ export class Game {
   keep() {
     this.board.cleanBoard();
     this.movePiece();
-    this.board.drawPieces();
+    this.board.drawStackedPiece();
+
+    if (Checker.checkGameOver({ board: this.board })) return this.over();
+
+    this.board.drawCurrentPiece();
     this.clearLines();
     this.levelUp();
     this.useInterface.render(this.user.getUserInfo());
@@ -74,8 +79,6 @@ export class Game {
   clearLines() {
     const lines = this.board.getClearedLines();
 
-    console.log(lines);
-
     if (!lines) return;
 
     this.user.addLines(lines);
@@ -91,7 +94,6 @@ export class Game {
 
   over() {
     cancelAnimationFrame(this.requestId);
-
     this.board.writeGameOverText();
   }
 }

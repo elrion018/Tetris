@@ -45,6 +45,10 @@ export class Piece {
     return this.status;
   }
 
+  getShape() {
+    return [...this.shape];
+  }
+
   draw() {
     this.context.fillStyle = this.color;
     this.shape.forEach((row, y) => {

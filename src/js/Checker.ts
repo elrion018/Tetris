@@ -1,4 +1,5 @@
-import { COLS, LINES_PER_LEVEL, PLACEHOLDER, ROWS, ZERO } from './constants';
+import { Board } from './board';
+import { COLS, PLACEHOLDER, ROWS, ZERO } from './constants';
 
 interface CheckPlaceHolderParams {
   value: number;
@@ -19,6 +20,10 @@ interface CheckNotQccupiedPositionsParams {
   grid: number[][];
   xPosition: number;
   yPosition: number;
+}
+
+interface CheckGameOverParams {
+  board: Board;
 }
 
 export class Checker {
@@ -74,7 +79,20 @@ export class Checker {
     });
   }
 
-  static checkLinesUpperLinesPerLevel(lines: number) {
-    return lines >= LINES_PER_LEVEL;
+  static checkGameOver({ board }: CheckGameOverParams) {
+    const grid = board.getGrid();
+    const currentPiece = board.getCurrentPiece();
+
+    if (!currentPiece) return;
+
+    const shape = currentPiece?.getShape();
+    const { xPosition, yPosition } = currentPiece.getPositions();
+
+    return !this.checkNotQccupiedPositions({
+      shape,
+      grid,
+      xPosition,
+      yPosition,
+    });
   }
 }
