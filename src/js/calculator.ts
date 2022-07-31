@@ -1,36 +1,29 @@
 import { LINES, SCORES, ZERO } from './constants';
 import { Checker } from './Checker';
 
-interface GetCalculatedScoreParams {
-  score: number;
+interface CalculateScoreByLineParams {
   lines: number;
 }
 
 export class Calculator {
-  getCalculatedScore({ score, lines }: GetCalculatedScoreParams) {
+  static calculateScoreByLine({ lines }: CalculateScoreByLineParams) {
     const { SINGLE, DOUBLE, TRIPLE, TETRIS, UPPER_TETRIS } = SCORES;
 
     switch (lines) {
       case LINES.SINGLE:
-        return score + SINGLE;
+        return SINGLE;
 
       case LINES.DOUBLE:
-        return score + DOUBLE;
+        return DOUBLE;
 
       case LINES.TRIPLE:
-        return score + TRIPLE;
+        return TRIPLE;
 
       case LINES.TETRIS:
-        return score + TETRIS;
+        return TETRIS;
 
       default:
-        return score + UPPER_TETRIS;
+        return UPPER_TETRIS;
     }
-  }
-
-  getRaisedLevel(lines: number, level: number) {
-    if (Checker.checkLinesUpperLinesPerLevel(lines)) return level + 1;
-
-    return level;
   }
 }

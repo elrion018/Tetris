@@ -47,7 +47,7 @@ export const SCORES = {
   SOFT_DROP: 10,
   HARD_DROP: 30,
 
-  SCORE_FOR_LEVEL_UP: 1000,
+  SCORE_FOR_LEVEL_UP: 10000,
 };
 
 export const LINES = {

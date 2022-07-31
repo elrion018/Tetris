@@ -21,7 +21,6 @@ interface Props {
 export class Game {
   user: User;
   board: Board;
-  calculator: Calculator;
   useInterface: UserInterface;
   timer: Timer;
   requestId: number;
@@ -29,7 +28,6 @@ export class Game {
   constructor({ target }: Props) {
     this.user = new User();
     this.board = new Board({ target, user: this.user });
-    this.calculator = new Calculator();
     this.useInterface = new UserInterface({ target, board: this.board });
     this.timer = new Timer();
     this.requestId = 0;
@@ -80,9 +78,7 @@ export class Game {
 
     this.user.addLines(lines);
 
-    const { score } = this.user.getUserInfo();
-
-    this.user.addScore(this.calculator.getCalculatedScore({ score, lines }));
+    this.user.addScore(Calculator.calculateScoreByLine({ lines }));
   }
 
   levelUp() {
