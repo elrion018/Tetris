@@ -74,6 +74,8 @@ export class Game {
   clearLines() {
     const lines = this.board.getClearedLines();
 
+    console.log(lines);
+
     if (!lines) return;
 
     this.user.addLines(lines);

@@ -63,18 +63,17 @@ export class UserInterface {
 
   attachKeyboardEvent() {
     document.addEventListener(EVENT.KEYDOWN, (event: any) => {
-      event.preventDefault();
-
       const { code } = event;
-
-      if (!code) return;
-
-      const pressedKey =
+      const pressedDirectionKey =
         this.directionKeyHandlers[
           code as keyof typeof this.directionKeyHandlers
         ];
 
-      if (pressedKey) pressedKey(this.board);
+      if (!pressedDirectionKey) return;
+
+      event.preventDefault();
+
+      if (pressedDirectionKey) pressedDirectionKey(this.board);
     });
   }
 }
