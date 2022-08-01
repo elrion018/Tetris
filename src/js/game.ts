@@ -23,7 +23,7 @@ export class Game {
   private target: HTMLElement;
   private user: User;
   private board: Board;
-  private useInterface: View;
+  private view: View;
   private timer: Timer;
   private gameId: number;
 
@@ -31,7 +31,7 @@ export class Game {
     this.target = target;
     this.user = new User();
     this.board = new Board({ target, user: this.user });
-    this.useInterface = new View({ target, game: this });
+    this.view = new View({ target, game: this });
     this.timer = new Timer();
     this.gameId = 0;
   }
@@ -46,7 +46,8 @@ export class Game {
     this.board.drawCurrentPiece();
     this.clearLines();
     this.levelUp();
-    this.useInterface.render(this.user.getUserInfo());
+
+    this.render();
 
     this.gameId = requestAnimationFrame(this.keep.bind(this));
   }
@@ -65,6 +66,12 @@ export class Game {
     const { score, level } = this.user.getUserInfo();
 
     if (score >= SCORE_FOR_LEVEL_UP * level) this.user.levelUp();
+  }
+
+  private render() {
+    const { lines, score, level } = this.user.getUserInfo();
+
+    this.view.render(score, lines, level);
   }
 
   private over() {

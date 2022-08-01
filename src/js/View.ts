@@ -11,21 +11,15 @@ interface DirectionKeyHandlers {
   Space: DirectionKeyHandler;
 }
 
-interface RenderParams {
-  score: number;
-  lines: number;
-  level: number;
-}
-
 interface Props {
   target: HTMLElement;
   game: Game;
 }
 
 export class View {
-  target: HTMLElement;
-  game: Game;
-  directionKeyHandlers: DirectionKeyHandlers;
+  private target: HTMLElement;
+  private game: Game;
+  private directionKeyHandlers: DirectionKeyHandlers;
 
   constructor({ target, game }: Props) {
     this.target = target;
@@ -55,28 +49,20 @@ export class View {
     this.start();
   }
 
-  start() {
+  private start() {
     this.attachEventHandlers();
   }
 
-  render({ score, lines, level }: RenderParams) {
-    Object.entries({ score, lines, level }).forEach(([key, value]) => {
-      const element = this.target.querySelector(`#${key}`);
-
-      if (element) element.textContent = value.toString();
-    });
-  }
-
-  attachEventHandlers() {
+  private attachEventHandlers() {
     this.attachKeyboardEventHandler();
     this.attachPlayButtonEventHandler();
   }
 
-  attachKeyboardEventHandler() {
+  private attachKeyboardEventHandler() {
     document.addEventListener(EVENT.KEYDOWN, this.movePieceByKey.bind(this));
   }
 
-  attachPlayButtonEventHandler() {
+  private attachPlayButtonEventHandler() {
     const button = document.querySelector<HTMLButtonElement>(
       BUTTON_CLASS_SELECTOR
     );
@@ -85,7 +71,7 @@ export class View {
       button.addEventListener(EVENT.CLICK, this.playButtonHandler.bind(this));
   }
 
-  playButtonHandler() {
+  private playButtonHandler() {
     const gameId = this.game.getGameId();
 
     if (gameId) {
@@ -98,7 +84,7 @@ export class View {
     this.game.start();
   }
 
-  movePieceByKey(event: any) {
+  private movePieceByKey(event: any) {
     const { code } = event;
     const pressedDirectionKey =
       this.directionKeyHandlers[code as keyof typeof this.directionKeyHandlers];
@@ -108,5 +94,13 @@ export class View {
     event.preventDefault();
 
     if (pressedDirectionKey) pressedDirectionKey(this.game);
+  }
+
+  render(score: number, lines: number, level: number) {
+    Object.entries({ score, lines, level }).forEach(([key, value]) => {
+      const element = this.target.querySelector(`#${key}`);
+
+      if (element) element.textContent = value.toString();
+    });
   }
 }
