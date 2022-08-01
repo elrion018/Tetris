@@ -29,7 +29,7 @@ export class Game {
   constructor({ target }: Props) {
     this.user = new User();
     this.board = new Board({ target, user: this.user });
-    this.useInterface = new UserInterface({ target, board: this.board });
+    this.useInterface = new UserInterface({ target, game: this });
     this.timer = new Timer();
     this.requestId = 0;
 
@@ -38,7 +38,7 @@ export class Game {
 
   start() {
     this.timer.start();
-    this.useInterface.attachKeyboardEvent();
+    this.useInterface.attachEventHandlers();
 
     this.requestId = requestAnimationFrame(this.keep.bind(this));
   }
@@ -50,7 +50,7 @@ export class Game {
 
   keep() {
     this.board.cleanBoard();
-    this.movePiece();
+    this.movePieceByTime();
     this.board.drawStackedPiece();
 
     if (Checker.checkGameOver({ board: this.board })) return this.over();
@@ -63,7 +63,7 @@ export class Game {
     this.requestId = requestAnimationFrame(this.keep.bind(this));
   }
 
-  movePiece() {
+  movePieceByTime() {
     const elaspedTime = this.timer.getElapsedTime();
     const { level } = this.user.getUserInfo();
 
@@ -74,6 +74,18 @@ export class Game {
       this.board.movePiece(ZERO, ONE);
       this.timer.updateBorderTime();
     }
+  }
+
+  movePieceByKey(changeX: number, changeY: number) {
+    this.board.movePiece(changeX, changeY);
+  }
+
+  rotatePiece() {
+    this.board.rotatePiece();
+  }
+
+  dropPiece() {
+    this.board.dropPiece();
   }
 
   clearLines() {

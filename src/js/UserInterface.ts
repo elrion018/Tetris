@@ -1,7 +1,7 @@
-import { EVENT, ONE, ZERO } from './constants';
-import { Board } from './board';
+import { BUTTON_CLASS_SELECTOR, EVENT, ONE, ZERO } from './constants';
+import { Game } from './Game';
 
-type DirectionKeyHandler = (board: Board) => void;
+type DirectionKeyHandler = (game: Game) => void;
 
 interface DirectionKeyHandlers {
   ArrowLeft: DirectionKeyHandler;
@@ -19,36 +19,36 @@ interface RenderParams {
 
 interface Props {
   target: HTMLElement;
-  board: Board;
+  game: Game;
 }
 
 export class UserInterface {
   target: HTMLElement;
-  board: Board;
+  game: Game;
   directionKeyHandlers: DirectionKeyHandlers;
 
-  constructor({ target, board }: Props) {
+  constructor({ target, game }: Props) {
     this.target = target;
-    this.board = board;
+    this.game = game;
     this.directionKeyHandlers = {
-      ArrowLeft: (board: Board) => {
-        board.movePiece(-ONE, ZERO);
+      ArrowLeft: (game: Game) => {
+        game.movePieceByKey(-ONE, ZERO);
       },
 
-      ArrowRight: (board: Board) => {
-        board.movePiece(ONE, ZERO);
+      ArrowRight: (game: Game) => {
+        game.movePieceByKey(ONE, ZERO);
       },
 
-      ArrowUp: (board: Board) => {
-        board.rotatePiece();
+      ArrowUp: (game: Game) => {
+        game.rotatePiece();
       },
 
-      ArrowDown: (board: Board) => {
-        board.movePiece(ZERO, ONE);
+      ArrowDown: (game: Game) => {
+        game.movePieceByKey(ZERO, ONE);
       },
 
-      Space: (board: Board) => {
-        board.dropPiece();
+      Space: (game: Game) => {
+        game.dropPiece();
       },
     };
   }
@@ -61,19 +61,47 @@ export class UserInterface {
     });
   }
 
-  attachKeyboardEvent() {
-    document.addEventListener(EVENT.KEYDOWN, (event: any) => {
-      const { code } = event;
-      const pressedDirectionKey =
-        this.directionKeyHandlers[
-          code as keyof typeof this.directionKeyHandlers
-        ];
+  attachEventHandlers() {
+    this.attachKeyboardEventHandler();
+    this.attachPlayButtonEventHandler();
+  }
 
-      if (!pressedDirectionKey) return;
+  attachKeyboardEventHandler() {
+    document.addEventListener(EVENT.KEYDOWN, this.movePieceByKey);
+  }
 
-      event.preventDefault();
+  attachPlayButtonEventHandler() {
+    const button = document.querySelector<HTMLButtonElement>(
+      BUTTON_CLASS_SELECTOR
+    );
 
-      if (pressedDirectionKey) pressedDirectionKey(this.board);
-    });
+    if (button) button.addEventListener(EVENT.CLICK, this.gameStart);
+  }
+
+  clearEventHandlers() {
+    this.clearKeyboardEventHandler();
+    this.clearPlayButtonEventHandler();
+  }
+
+  clearKeyboardEventHandler() {
+    document.removeEventListener(EVENT.CLICK, this.movePieceByKey);
+  }
+
+  clearPlayButtonEventHandler() {}
+
+  gameStart() {
+    this.game.start();
+  }
+
+  movePieceByKey(event: any) {
+    const { code } = event;
+    const pressedDirectionKey =
+      this.directionKeyHandlers[code as keyof typeof this.directionKeyHandlers];
+
+    if (!pressedDirectionKey) return;
+
+    event.preventDefault();
+
+    if (pressedDirectionKey) pressedDirectionKey(this.game);
   }
 }
