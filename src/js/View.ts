@@ -22,7 +22,7 @@ interface Props {
   game: Game;
 }
 
-export class UserInterface {
+export class View {
   target: HTMLElement;
   game: Game;
   directionKeyHandlers: DirectionKeyHandlers;
@@ -51,6 +51,12 @@ export class UserInterface {
         game.dropPiece();
       },
     };
+
+    this.start();
+  }
+
+  start() {
+    this.attachEventHandlers();
   }
 
   render({ score, lines, level }: RenderParams) {
@@ -67,7 +73,7 @@ export class UserInterface {
   }
 
   attachKeyboardEventHandler() {
-    document.addEventListener(EVENT.KEYDOWN, this.movePieceByKey);
+    document.addEventListener(EVENT.KEYDOWN, this.movePieceByKey.bind(this));
   }
 
   attachPlayButtonEventHandler() {
@@ -75,21 +81,20 @@ export class UserInterface {
       BUTTON_CLASS_SELECTOR
     );
 
-    if (button) button.addEventListener(EVENT.CLICK, this.gameStart);
+    if (button)
+      button.addEventListener(EVENT.CLICK, this.playButtonHandler.bind(this));
   }
 
-  clearEventHandlers() {
-    this.clearKeyboardEventHandler();
-    this.clearPlayButtonEventHandler();
-  }
+  playButtonHandler() {
+    const gameId = this.game.getGameId();
 
-  clearKeyboardEventHandler() {
-    document.removeEventListener(EVENT.CLICK, this.movePieceByKey);
-  }
+    if (gameId) {
+      this.game.reset();
+      this.game.start();
 
-  clearPlayButtonEventHandler() {}
+      return;
+    }
 
-  gameStart() {
     this.game.start();
   }
 
