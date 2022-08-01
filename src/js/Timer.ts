@@ -1,33 +1,17 @@
 import { ONE_HUNDRED_MS } from './constants';
 
 export class Timer {
-  borderTime: number;
-  progress: number;
-  timerId: ReturnType<typeof setTimeout> | null;
+  private step: number;
+  private progress: number;
+  private timerId: ReturnType<typeof setTimeout> | null;
 
   constructor() {
-    this.borderTime = 0;
+    this.step = 0;
     this.progress = 0;
     this.timerId = null;
   }
 
-  start() {
-    this.timerId = this.tick();
-  }
-
-  getElapsedTime() {
-    return this.progress - this.borderTime;
-  }
-
-  updateBorderTime() {
-    this.borderTime = this.progress;
-  }
-
-  setborderTime(newBorderTime: number) {
-    this.borderTime = newBorderTime;
-  }
-
-  tick() {
+  private tick() {
     return setTimeout(
       (() => {
         this.progress += ONE_HUNDRED_MS;
@@ -38,11 +22,15 @@ export class Timer {
     );
   }
 
-  clear() {
-    if (!this.timerId) return;
+  start() {
+    this.timerId = this.tick();
+  }
 
-    clearTimeout(this.timerId);
+  getElapsedTime() {
+    return this.progress - this.step;
+  }
 
-    this.timerId = null;
+  updateStep() {
+    this.step = this.progress;
   }
 }

@@ -104,7 +104,7 @@ export class Game {
       TIME_FOR_MOVE_DOWN_BY_LEVEL[level > MAX_LEVEL ? MAX_LEVEL : level]
     ) {
       this.board.movePiece(ZERO, ONE);
-      this.timer.updateBorderTime();
+      this.timer.updateStep();
     }
   }
 
